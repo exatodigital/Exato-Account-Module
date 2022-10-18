@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Exato_Account_Module.Domain
+namespace Exato_Account_Module.Domain.Repository
 {
-    public interface IAccountTypeRepository
+    public interface ICurrencyRepository
     {
         void Create();
         void Edit();
