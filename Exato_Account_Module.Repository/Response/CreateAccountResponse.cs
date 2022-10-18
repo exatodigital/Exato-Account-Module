@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Exato_Account_Module.Repository
 {
-    public class CreateAccountReturn : ICreateAccountResponse
+    public class CreateAccountResponse : ICreateAccountResponse
     {
         public string Success { get; set; }
 
-        public CreateAccountReturn(string success)
+        public CreateAccountResponse(string success)
         {
             Success = success;
         }
