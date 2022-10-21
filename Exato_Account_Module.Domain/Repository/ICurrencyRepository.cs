@@ -8,9 +8,10 @@ namespace Exato_Account_Module.Domain.Repository
 {
     public interface ICurrencyRepository
     {
-        void Create();
-        void Edit();
-        void Delete();
-        void List();
+        void CreateCurrency();
+        void UpdateCurrency();
+        void DeleteCurrency();
+        void ListAllCurrencys();
+        void GetCurrency();
     }
 }

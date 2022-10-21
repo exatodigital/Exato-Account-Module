@@ -8,8 +8,12 @@ namespace Exato_Account_Module.Domain.Repository
 {
     public interface ITransactionRepository
     {
-        void Credit();
-        void Debit();
-        void List();
+        void CreditAccount();
+        void DebitAccount();
+        void ListAllTransactions();
+        void ListLast30DaysTransactions();
+        void ListLast60DaysTransactions();
+        void ListLast90DaysTransactions();
+        void ListTransactionsCustomDays();
     }
 }

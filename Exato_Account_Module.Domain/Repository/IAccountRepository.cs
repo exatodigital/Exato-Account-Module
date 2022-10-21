@@ -8,9 +8,9 @@ namespace Exato_Account_Module.Domain.Repository
 {
     public interface IAccountRepository
     {
-        void Create();
-        void Edit();
-        void Delete(int id);
-        void List();
+        void CreateAccount();
+        void UpdateAccount();
+        void DeleteAccount(int id);
+        void GetAccount();
     }
 }
