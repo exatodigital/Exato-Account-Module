@@ -9,8 +9,6 @@
   <ItemGroup>
     <ProjectReference Include="..\ExatoDigital.OpenSource.AccountModule.Domain\ExatoDigital.OpenSource.AccountModule.Domain.csproj" />
     <ProjectReference Include="..\ExatoDigital.OpenSource.AccountModule.Repository\ExatoDigital.OpenSource.AccountModule.Repository.csproj" />
-    <ProjectReference Include="..\Exato_Account_Module.Domain\ExatoDigital.OpenSource.AccountModule.Domain.csproj" />
-    <ProjectReference Include="..\Exato_Account_Module.Repository\ExatoDigital.OpenSource.AccountModule.Repository.csproj" />
   </ItemGroup>
 
 </Project>

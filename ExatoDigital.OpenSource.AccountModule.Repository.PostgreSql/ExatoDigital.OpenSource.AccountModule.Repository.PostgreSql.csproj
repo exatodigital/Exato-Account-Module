@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ExatoDigital.OpenSource.AccountModule.Repository.Memory\ExatoDigital.OpenSource.AccountModule.Repository.Memory.csproj" />
+  </ItemGroup>
+
 </Project>
