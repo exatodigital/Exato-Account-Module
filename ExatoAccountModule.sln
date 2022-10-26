@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExatoDigital.OpenSource.AccountModule.Domain", "Exato_Account_Module.Domain\ExatoDigital.OpenSource.AccountModule.Domain.csproj", "{69F5F14E-8845-4AF6-A272-C098AA77F780}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExatoDigital.OpenSource.AccountModule.Domain", "ExatoDigital.OpenSource.AccountModule.Domain\ExatoDigital.OpenSource.AccountModule.Domain.csproj", "{69F5F14E-8845-4AF6-A272-C098AA77F780}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExatoDigital.OpenSource.AccountModule.Repository", "Exato_Account_Module.Repository\ExatoDigital.OpenSource.AccountModule.Repository.csproj", "{9E116C5D-02E7-4117-82DE-3207554752E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExatoDigital.OpenSource.AccountModule.Repository", "ExatoDigital.OpenSource.AccountModule.Repository\ExatoDigital.OpenSource.AccountModule.Repository.csproj", "{9E116C5D-02E7-4117-82DE-3207554752E6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExatoDigital.OpenSource.AccountModule.Tests", "Exato_Account_Module.Tests\ExatoDigital.OpenSource.AccountModule.Tests.csproj", "{60B56A91-D144-43C5-BDED-636E8C2A57EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExatoDigital.OpenSource.AccountModule.Tests", "ExatoDigital.OpenSource.AccountModule.Tests\ExatoDigital.OpenSource.AccountModule.Tests.csproj", "{60B56A91-D144-43C5-BDED-636E8C2A57EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql", "ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql\ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.csproj", "{B87C5A69-B4B3-4FE9-8D00-2A206ADF9F28}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql", "ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql\ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.csproj", "{B87C5A69-B4B3-4FE9-8D00-2A206ADF9F28}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExatoDigital.OpenSource.AccountModule.Repository.Memory", "ExatoDigital.OpenSource.AccountModule.Repository.Memory\ExatoDigital.OpenSource.AccountModule.Repository.Memory.csproj", "{D525943C-5003-4141-B305-12F03FBDEAA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExatoDigital.OpenSource.AccountModule.Repository.Memory", "ExatoDigital.OpenSource.AccountModule.Repository.Memory\ExatoDigital.OpenSource.AccountModule.Repository.Memory.csproj", "{D525943C-5003-4141-B305-12F03FBDEAA9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExatoDigital.OpenSource.AccountModule.Core", "ExatoDigital.OpenSource.AccountModule.Core\ExatoDigital.OpenSource.AccountModule.Core.csproj", "{BAB984EE-C70E-420D-B4BD-FF3DE3452EA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExatoDigital.OpenSource.AccountModule.Core", "ExatoDigital.OpenSource.AccountModule.Core\ExatoDigital.OpenSource.AccountModule.Core.csproj", "{BAB984EE-C70E-420D-B4BD-FF3DE3452EA4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
