@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Exato_Account_Module.Domain.Repository
+namespace ExatoDigital.OpenSource.AccountModule.Domain.Response
 {
-    public interface IFacade
+    public abstract class AccountModuleResult
     {
-        public void CreateAccount();
-
     }
 }

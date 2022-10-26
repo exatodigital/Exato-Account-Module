@@ -6,8 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Exato_Account_Module.Domain\Exato_Account_Module.Domain.csproj" />
-  </ItemGroup>
-
 </Project>

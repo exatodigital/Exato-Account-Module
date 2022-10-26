@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Exato_Account_Module.Domain\ExatoDigital.OpenSource.AccountModule.Domain.csproj" />
+    <ProjectReference Include="..\Exato_Account_Module.Repository\ExatoDigital.OpenSource.AccountModule.Repository.csproj" />
+  </ItemGroup>
+
+</Project>
