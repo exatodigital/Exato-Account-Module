@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ExatoDigital.OpenSource.AccountModule.Domain.Parameters
+namespace ExatoDigital.OpenSource.AccountModule.Repository.Models
 {
-    public abstract class AccountModuleParameters
+    public class AccountType
     {
-        
+
     }
 }

@@ -15,4 +15,12 @@
     <PackageReference Include="coverlet.collector" Version="3.1.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ExatoDigital.OpenSource.AccountModule.Core\ExatoDigital.OpenSource.AccountModule.Core.csproj" />
+    <ProjectReference Include="..\ExatoDigital.OpenSource.AccountModule.Domain\ExatoDigital.OpenSource.AccountModule.Domain.csproj" />
+    <ProjectReference Include="..\ExatoDigital.OpenSource.AccountModule.Repository.Memory\ExatoDigital.OpenSource.AccountModule.Repository.Memory.csproj" />
+    <ProjectReference Include="..\ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql\ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.csproj" />
+    <ProjectReference Include="..\ExatoDigital.OpenSource.AccountModule.Repository\ExatoDigital.OpenSource.AccountModule.Repository.csproj" />
+  </ItemGroup>
+
 </Project>

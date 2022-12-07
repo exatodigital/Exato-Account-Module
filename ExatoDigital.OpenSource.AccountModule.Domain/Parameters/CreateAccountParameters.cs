@@ -8,6 +8,8 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Parameters
 {
     public class CreateAccountParameters : AccountModuleParameters
     {
+        public CreateAccountParameters(string id) { }
+
         #region Propriedades
         public string? id { get; set; }
         #endregion

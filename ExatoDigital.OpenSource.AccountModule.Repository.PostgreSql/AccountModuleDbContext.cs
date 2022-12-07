@@ -9,6 +9,10 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql
 {
     public sealed class AccountModuleDbContext : DbContext
     {
+        private readonly String? _connectionString;
+
+        public AccountModuleDbContext(string connectionString) : base() { _connectionString = connectionString; }
+
         public AccountModuleDbContext(DbContextOptions<AccountModuleDbContext> options)
           : base(options)
         {

@@ -1,13 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ExatoDigital.OpenSource.AccountModule.Domain\ExatoDigital.OpenSource.AccountModule.Domain.csproj" />
+    <ProjectReference Include="..\ExatoDigital.OpenSource.AccountModule.Repository.Memory\ExatoDigital.OpenSource.AccountModule.Repository.Memory.csproj" />
+    <ProjectReference Include="..\ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql\ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.csproj" />
     <ProjectReference Include="..\ExatoDigital.OpenSource.AccountModule.Repository\ExatoDigital.OpenSource.AccountModule.Repository.csproj" />
   </ItemGroup>
 

@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ExatoDigital.OpenSource.AccountModule.Domain.Parameters
+namespace ExatoDigital.OpenSource.AccountModule.Tests.AccountTests
 {
-    public abstract class AccountModuleParameters
+    public class CreateAccountTests
     {
-        
     }
 }
