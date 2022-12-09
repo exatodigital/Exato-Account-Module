@@ -23,12 +23,15 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Models
         [Column(TypeName = "jsonb")]
         public string Metadata { get; set; }
         public string Owner { get; set; }
-        public int CurrentBalance { get; set; }
+        public decimal CurrentBalance { get; set; }
         public DateTime CreatedAt { get; set; }
         public int CreatedBy { get; set; }
         public DateTime UpdatedAt { get; set; }
         public int UpdatedBy { get; set; }
         public DateTime DeletedAt { get; set; }
         public int DeletedBy { get; set; }
+        public virtual AccountType AccountType { get; set; }
+        public virtual Currency Currency { get; set; }
+        public ICollection<Transaction> Transactions { get; set; }
     }
 }
