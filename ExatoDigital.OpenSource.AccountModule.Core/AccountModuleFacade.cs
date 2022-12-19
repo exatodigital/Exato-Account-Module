@@ -45,8 +45,8 @@ namespace ExatoDigital.OpenSource.AccountModule.Core
         public async Task<CreateAccountResult> CreateAccount(CreateAccountParameters parameters)
         {
             var repository = _accountModuleRepositoryFactory.Create();
-            await repository.CreateAccount(parameters);
-            return new CreateAccountResult();
+            var response = await repository.CreateAccount(parameters);
+            return response;
         }
 
         public async Task<BlockUserBalanceResult> BlockUserBalance(BlockUserBalanceParameters parameters)

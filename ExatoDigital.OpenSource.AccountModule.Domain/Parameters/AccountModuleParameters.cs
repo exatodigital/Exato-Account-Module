@@ -8,6 +8,6 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Parameters
 {
     public abstract class AccountModuleParameters
     {
-        
+
     }
 }
