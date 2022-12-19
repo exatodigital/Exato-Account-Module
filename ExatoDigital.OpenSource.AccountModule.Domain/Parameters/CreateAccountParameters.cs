@@ -8,10 +8,33 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Parameters
 {
     public class CreateAccountParameters : AccountModuleParameters
     {
-        public CreateAccountParameters(string id) { }
+        public CreateAccountParameters(string internalName, string longDisplayName, string shortDisplayName, string? description, string? owner, decimal balance, Guid? masterAccountUid, Guid? relatedAccountUid, int accountTypeId, int currencyId)
+        {
+            InternalName = internalName;
+            LongDisplayName = longDisplayName;
+            ShortDisplayName = shortDisplayName;
+            Description = description;
+            Owner = owner;
+            Balance = balance;
+            MasterAccountUid = masterAccountUid;
+            RelatedAccountUid = relatedAccountUid;
+            AccountTypeId = accountTypeId;
+            CurrencyId = currencyId;
+        }
 
         #region Propriedades
-        public string? id { get; set; }
+
+        public string InternalName { get; set; }
+        public string LongDisplayName { get; set; }
+        public string ShortDisplayName { get; set; }
+        public string? Description { get; set; }
+        public string? Owner { get; set; }
+        public decimal Balance { get; set; }
+        public Guid? MasterAccountUid { get; set; }
+        public Guid? RelatedAccountUid { get; set; }
+        public int AccountTypeId { get; set; }
+        public int CurrencyId { get; set; }
+    
         #endregion
 
     }
