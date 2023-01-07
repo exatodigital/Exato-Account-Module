@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ExatoDigital.OpenSource.AccountModule.Repository.Models;
 
 namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql
 {
@@ -11,6 +12,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql
     {
         private readonly String? _connectionString;
 
+        public AccountModuleDbContext(DbContextOptions options) : base (options){}
         public AccountModuleDbContext(string connectionString) : base() { _connectionString = connectionString; }
 
         public AccountModuleDbContext(DbContextOptions<AccountModuleDbContext> options)
@@ -19,7 +21,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql
 
         }
 
-        // public DbSet<xxx> xxx { get; set; }
+        public DbSet<Account> Account { get; set; }
         // public DbSet<xxx> xxx { get; set; }
         // public DbSet<xxx> xxx { get; set; }
 
