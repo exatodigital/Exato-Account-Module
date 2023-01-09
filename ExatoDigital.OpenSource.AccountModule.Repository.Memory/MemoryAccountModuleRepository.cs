@@ -23,7 +23,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
         {
             var result = _accountModuleDbContext.Account.Add(new Account
             {
-                AccountId = 0,
+                AccountId = 1,
                 AccountUid = default,
                 AccountExternalUid = default,
                 AccountClientId = 0,
@@ -47,11 +47,8 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
                 Transactions = null
             });
             await _accountModuleDbContext.SaveChangesAsync();
-            var resultado = _accountModuleDbContext.Account.FirstOrDefault();
-            if (resultado is not null)
-                return new CreateAccountResult() { Success = true };
-            else
-                return new CreateAccountResult() { Success = false };
+            var resultado = _accountModuleDbContext.Account.Where(x => x.AccountId == 1).First();
+            return new CreateAccountResult() { Success = true };
         }
 
         public async Task<BlockUserBalanceResult> BlockUserBalance(BlockUserBalanceParameters parameters)
