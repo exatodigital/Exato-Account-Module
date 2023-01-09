@@ -28,11 +28,11 @@ namespace ExatoDigital.OpenSource.AccountModule.Tests.AccountTests
             _accountModuleFacade = new AccountModuleFacade(factory);
         }
         [TestMethod]
-        public void CreateAccount()
+        public async Task CreateAccountSuccess()
         {
             var createAccountParams = new CreateAccountParameters("Exato", "Exato Digital", "Exato",null,null , 10 , null,null, accountTypeId: 1, currencyId: 1);
-            var createAccount = _accountModuleFacade.CreateAccount(createAccountParams);
-            Assert.IsTrue(createAccount.Result.Success);
+            var createAccount = await _accountModuleFacade.CreateAccount(createAccountParams);
+            Assert.IsTrue(createAccount.Success);
         }
     }
 }

@@ -30,8 +30,8 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Models
         public int UpdatedBy { get; set; }
         public DateTime DeletedAt { get; set; }
         public int DeletedBy { get; set; }
-        public virtual AccountType AccountType { get; set; }
-        public virtual Currency Currency { get; set; }
-        public ICollection<Transaction> Transactions { get; set; }
+        public virtual AccountType? AccountType { get; set; }
+        public virtual Currency? Currency { get; set; }
+        public ICollection<Transaction>? Transactions { get; set; }
     }
 }

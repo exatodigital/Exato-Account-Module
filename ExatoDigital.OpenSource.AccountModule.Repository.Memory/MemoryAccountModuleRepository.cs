@@ -29,12 +29,12 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
                 AccountClientId = 0,
                 MasterAccountUid = default,
                 RelatedAccountUid = default,
-                InternalName = null,
-                LongDisplayName = null,
+                InternalName = "Teste",
+                LongDisplayName = "",
                 ShortDisplayName = "Teste",
-                Description = null,
-                Metadata = null,
-                Owner = null,
+                Description = "",
+                Metadata = "",
+                Owner = "",
                 CurrentBalance = 0,
                 CreatedAt = default,
                 CreatedBy = 0,
@@ -46,12 +46,12 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
                 Currency = null,
                 Transactions = null
             });
-            _accountModuleDbContext.SaveChangesAsync();
-            var resultado = _accountModuleDbContext.Account.Single(x => x.AccountId == 0);
-            if (resultado is null)
-                return new CreateAccountResult() { Success = false };
-            else
+            await _accountModuleDbContext.SaveChangesAsync();
+            var resultado = _accountModuleDbContext.Account.FirstOrDefault();
+            if (resultado is not null)
                 return new CreateAccountResult() { Success = true };
+            else
+                return new CreateAccountResult() { Success = false };
         }
 
         public async Task<BlockUserBalanceResult> BlockUserBalance(BlockUserBalanceParameters parameters)
