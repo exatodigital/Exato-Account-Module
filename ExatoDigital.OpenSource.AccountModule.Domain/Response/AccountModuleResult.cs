@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace ExatoDigital.OpenSource.AccountModule.Domain.Response
 {
-    public abstract class AccountModuleResult
+    public class AccountModuleResult
     {
+        public bool Success { get; set; }
     }
 }

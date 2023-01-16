@@ -11,13 +11,6 @@ using ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 
-// TODO: Leandro - Nomes dos projetos e namespaces
-// ExatoDigital.OpenSource.AccountModule.Domain                  - Classes de domínio utilizadas pelo consumidor
-// ExatoDigital.OpenSource.AccountModule.Repository              - Interfaces dos repositórios
-// ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql   - Repositório específico para o PostgreSql
-// ExatoDigital.OpenSource.AccountModule.Repository.Memory       - Repositório em memória
-// ExatoDigital.OpenSource.AccountModule.TBD (Core/Engine/TBD)   - Classe de fachada
-
 // Para logs: https://net-commons.github.io/common-logging/, https://www.nuget.org/packages/Common.Logging
 // Para injeção de dependências: Autofac / Ninject
 // Para JSON: Newtonsoft (Json.NET) / Microsoft
@@ -46,6 +39,12 @@ namespace ExatoDigital.OpenSource.AccountModule.Core
         {
             var repository = _accountModuleRepositoryFactory.Create();
             var response = await repository.CreateAccount(parameters);
+            return response;
+        }
+        public async Task<CreateAccountTypeResult> CreateAccountType(CreateAccountTypeParameters parameters)
+        {
+            var repository = _accountModuleRepositoryFactory.Create();
+            var response = await repository.CreateAccountType(parameters);
             return response;
         }
 

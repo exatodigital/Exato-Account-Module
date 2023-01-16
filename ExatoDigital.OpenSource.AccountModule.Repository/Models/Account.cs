@@ -19,10 +19,10 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Models
         public string InternalName { get; set; }
         public string LongDisplayName { get; set; }
         public string ShortDisplayName { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
         [Column(TypeName = "jsonb")]
-        public string Metadata { get; set; }
-        public string Owner { get; set; }
+        public string? Metadata { get; set; }
+        public string? Owner { get; set; }
         public decimal CurrentBalance { get; set; }
         public DateTime CreatedAt { get; set; }
         public int CreatedBy { get; set; }

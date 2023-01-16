@@ -6,8 +6,12 @@ using System.Threading.Tasks;
 
 namespace ExatoDigital.OpenSource.AccountModule.Domain.Parameters
 {
-    public class AccountModuleParameters
+    public class CreateAccountTypeParameters
     {
-
+        public CreateAccountTypeParameters(string name) 
+        {
+            Name = name;
+        }
+        public string Name { get; set; }
     }
 }

@@ -21,20 +21,20 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
         
         public async Task<CreateAccountResult> CreateAccount(CreateAccountParameters parameters)
         {
-            var result = _accountModuleDbContext.Account.Add(new Account
+            _accountModuleDbContext.Account.Add(new Account
             {
                 AccountId = 1,
                 AccountUid = default,
                 AccountExternalUid = default,
-                AccountClientId = 0,
+                AccountClientId = 1,
                 MasterAccountUid = default,
                 RelatedAccountUid = default,
-                InternalName = "Teste",
-                LongDisplayName = "",
-                ShortDisplayName = "Teste",
-                Description = "",
+                InternalName = parameters.InternalName,
+                LongDisplayName = parameters.LongDisplayName,
+                ShortDisplayName = parameters.ShortDisplayName,
+                Description = parameters.Description,
                 Metadata = "",
-                Owner = "",
+                Owner = parameters.Owner,
                 CurrentBalance = 0,
                 CreatedAt = default,
                 CreatedBy = 0,
@@ -47,8 +47,39 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
                 Transactions = null
             });
             await _accountModuleDbContext.SaveChangesAsync();
-            var resultado = _accountModuleDbContext.Account.Where(x => x.AccountId == 1).First();
+            //var resultado = _accountModuleDbContext.Account.Where(x => x.AccountId == 1).First();
             return new CreateAccountResult() { Success = true };
+        }
+
+        public async Task<CreateAccountTypeResult> CreateAccountType(CreateAccountTypeParameters parameters)
+        {
+            _accountModuleDbContext.AccountType.Add(new AccountType
+            {
+                AccountTypeId = 1,
+                AccountTypeUid = default,
+                AccountTypeExternalUid = default,
+                AccountTypeClientId  = 1,
+                Name = parameters.Name,
+                NegativeBalanceAllowed  = default,
+                AllowedToExpire  = default,
+                ExpireAt = default,
+                CreatedAt = default,
+                CreatedBy = default,
+                UpdatedAt = default,
+                UpdatedBy = default,
+                DeletedAt = default,
+                DeletedBy = default
+            });
+            try
+            {
+                await _accountModuleDbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            var resultado = _accountModuleDbContext.AccountType.Where(x => x.AccountTypeId == 1).First();
+            return new CreateAccountTypeResult() { Success = true };
         }
 
         public async Task<BlockUserBalanceResult> BlockUserBalance(BlockUserBalanceParameters parameters)

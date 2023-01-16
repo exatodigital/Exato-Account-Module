@@ -17,6 +17,10 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
         { 
             return new CreateAccountResult();
         }
+        public async Task<CreateAccountTypeResult> CreateAccountType(CreateAccountTypeParameters parameters)
+        {
+            return new CreateAccountTypeResult();
+        }
         public async Task<BlockUserBalanceResult> BlockUserBalance(BlockUserBalanceParameters parameters)
         {
             return new BlockUserBalanceResult();

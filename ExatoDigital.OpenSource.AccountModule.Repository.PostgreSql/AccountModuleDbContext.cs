@@ -22,6 +22,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql
         }
 
         public DbSet<Account> Account { get; set; }
+        public DbSet<AccountType> AccountType { get; set; }
         // public DbSet<xxx> xxx { get; set; }
         // public DbSet<xxx> xxx { get; set; }
 
