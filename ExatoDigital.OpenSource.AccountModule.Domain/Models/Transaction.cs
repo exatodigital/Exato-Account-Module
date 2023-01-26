@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ExatoDigital.OpenSource.AccountModule.Repository.Models
+namespace ExatoDigital.OpenSource.AccountModule.Domain.Models
 {
     public class Transaction
     {

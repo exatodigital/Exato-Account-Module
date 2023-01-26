@@ -12,6 +12,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain
     {
         public Task<BlockUserBalanceResult> BlockUserBalance(BlockUserBalanceParameters parameters);
         public Task<CreateAccountResult> CreateAccount(CreateAccountParameters parameters);
+        public Task<CreateAccountTypeResult> CreateAccountType(CreateAccountTypeParameters parameters);
 
     }
 }

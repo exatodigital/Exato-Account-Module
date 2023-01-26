@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ExatoDigital.OpenSource.AccountModule.Repository.Models;
+using ExatoDigital.OpenSource.AccountModule.Domain.Models;
 
 namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql
 {
@@ -23,6 +23,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql
 
         public DbSet<Account> Account { get; set; }
         public DbSet<AccountType> AccountType { get; set; }
+        public DbSet<Currency> Currency { get; set; }
         // public DbSet<xxx> xxx { get; set; }
         // public DbSet<xxx> xxx { get; set; }
 

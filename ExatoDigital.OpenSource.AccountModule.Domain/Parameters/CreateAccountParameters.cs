@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ExatoDigital.OpenSource.AccountModule.Domain.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Parameters
 {
     public class CreateAccountParameters : AccountModuleParameters
     {
-        public CreateAccountParameters(string internalName, string longDisplayName, string shortDisplayName, string? description, string? owner, decimal balance, Guid? masterAccountUid, Guid? relatedAccountUid, int accountTypeId, int currencyId)
+        public CreateAccountParameters(string internalName, string longDisplayName, string shortDisplayName, string? description, string? owner, decimal balance, Guid? masterAccountUid, Guid? relatedAccountUid, int currencyId, int accountTypeId)
         {
             InternalName = internalName;
             LongDisplayName = longDisplayName;
@@ -18,8 +19,8 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Parameters
             Balance = balance;
             MasterAccountUid = masterAccountUid;
             RelatedAccountUid = relatedAccountUid;
-            AccountTypeId = accountTypeId;
             CurrencyId = currencyId;
+            AccountTypeId = accountTypeId;
         }
 
         #region Propriedades
@@ -32,8 +33,8 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Parameters
         public decimal Balance { get; set; }
         public Guid? MasterAccountUid { get; set; }
         public Guid? RelatedAccountUid { get; set; }
-        public int AccountTypeId { get; set; }
         public int CurrencyId { get; set; }
+        public int AccountTypeId { get; set;}
     
         #endregion
 

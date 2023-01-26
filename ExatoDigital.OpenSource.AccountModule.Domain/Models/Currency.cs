@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ExatoDigital.OpenSource.AccountModule.Repository.Models
+namespace ExatoDigital.OpenSource.AccountModule.Domain.Models
 {
     public class Currency
     {
@@ -16,9 +16,9 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Models
         public string InternalName { get; set; }
         public string LongDisplayName { get; set; }
         public string ShortDisplayName { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
         [Column(TypeName = "jsonb")]
-        public string AdditionalMetadata { get; set; }
+        public string? AdditionalMetadata { get; set; }
         public int DecimalPrecision { get; set; }
         public int MinValue { get; set; }
         public int MaxValue { get; set; }

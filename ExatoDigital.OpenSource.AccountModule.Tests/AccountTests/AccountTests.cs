@@ -1,6 +1,7 @@
 ﻿using ExatoDigital.OpenSource.AccountModule.Core;
 using ExatoDigital.OpenSource.AccountModule.Domain;
 using ExatoDigital.OpenSource.AccountModule.Domain.Parameters;
+using ExatoDigital.OpenSource.AccountModule.Domain.Models;
 using ExatoDigital.OpenSource.AccountModule.Domain.Response;
 using ExatoDigital.OpenSource.AccountModule.Repository.Memory;
 using ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql;
@@ -30,7 +31,15 @@ namespace ExatoDigital.OpenSource.AccountModule.Tests.AccountTests
         [TestMethod]
         public async Task CreateAccountSuccess()
         {
-            var createAccountParams = new CreateAccountParameters("Exato", "Exato Digital", "Exato",null,null , 10 , null,null, accountTypeId: 1, currencyId: 1);
+            // Criando AccountType
+            var createAccountTypeParams = new CreateAccountTypeParameters("Conta");
+            var accountType = await _accountModuleFacade.CreateAccountType(createAccountTypeParams);
+            // Criando Currency
+            var createCurrencyParams = new CreateCurrencyParameters("Créditos", "Créditos", "Créditos", null, 2, 1, 100000000, "CRED");
+            var currency = await _accountModuleFacade.CreateCurrency(createCurrencyParams);
+
+            //Criando Account
+            var createAccountParams = new CreateAccountParameters("Exato", "Exato Digital", "Exato",null,null , 10 , null,null, currencyId: currency.currency.CurrencyId, accountTypeId: accountType.accountType.AccountTypeId);
             var createAccount = await _accountModuleFacade.CreateAccount(createAccountParams);
             Assert.IsTrue(createAccount.Success);
         }

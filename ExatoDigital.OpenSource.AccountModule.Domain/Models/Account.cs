@@ -6,11 +6,13 @@ using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
-namespace ExatoDigital.OpenSource.AccountModule.Repository.Models
+namespace ExatoDigital.OpenSource.AccountModule.Domain.Models
 {
     public class Account
     {
         public int AccountId { get; set; }
+        public int AccountTypeId { get; set; }
+        public int CurrencyId { get; set; }
         public Guid AccountUid { get; set; }
         public Guid AccountExternalUid { get; set; }
         public int AccountClientId { get; set; }

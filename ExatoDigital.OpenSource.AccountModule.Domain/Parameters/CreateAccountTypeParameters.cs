@@ -8,10 +8,16 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Parameters
 {
     public class CreateAccountTypeParameters
     {
-        public CreateAccountTypeParameters(string name) 
+        public CreateAccountTypeParameters(string name, bool? negativeBalanceAllowed = false, bool? allowedToExpire = false, DateTime? expireAt = null) 
         {
             Name = name;
+            NegativeBalanceAllowed = negativeBalanceAllowed;
+            AllowedToExpire = allowedToExpire;
+            ExpiredAt = expireAt;
         }
         public string Name { get; set; }
+        public bool? NegativeBalanceAllowed { get; set; }
+        public bool? AllowedToExpire { get; set; }
+        public DateTime? ExpiredAt { get; set; }
     }
 }
