@@ -68,11 +68,43 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
         }
         public async Task<CreateAccountTypeResult> CreateAccountType(CreateAccountTypeParameters parameters)
         {
-            return new CreateAccountTypeResult();
+            var accountType = new AccountType
+            {
+                AccountTypeUid = default,
+                AccountTypeExternalUid = default,
+                AccountTypeClientId = 1,
+                Name = parameters.Name,
+                NegativeBalanceAllowed = default,
+                AllowedToExpire = default,
+                ExpireAt = default,
+                CreatedAt = default,
+                CreatedBy = default,
+                UpdatedAt = default,
+                UpdatedBy = default,
+                DeletedAt = default,
+                DeletedBy = default
+            };
+
+            DbContext.AccountType.Add(accountType);
+            await DbContext.SaveChangesAsync();
+
+            return new CreateAccountTypeResult() { Success = true, accountType = accountType };
         }
-        public async Task<CreateAccountTypeResult> RetrieveAccountType(CreateAccountTypeParameters parameters)
+        public async Task<RetrieveAccountTypeResult> RetrieveAccountType(RetrieveAccountTypeParameters parameters)
         {
-            return new CreateAccountTypeResult();
+            IQueryable<AccountType> query = DbContext.AccountType;
+            if (parameters.AccountTypeId != null)
+                query = query.AsQueryable().Where(c => c.AccountTypeId == parameters.AccountTypeId);
+            if (parameters.AccountTypeExternalUid != null)
+                query = query.AsQueryable().Where(c => c.AccountTypeExternalUid == parameters.AccountTypeExternalUid);
+            if (parameters.Name != null)
+                query = query.AsQueryable().Where(c => c.Name == parameters.Name);
+
+            var result = await query.AsNoTracking().FirstOrDefaultAsync();
+            if (result != null)
+                return new RetrieveAccountTypeResult() { AccountType = result, Success = true };
+            else
+                return new RetrieveAccountTypeResult() { AccountType = null, Success = false };
         }
         public async Task<CreateAccountTypeResult> UpdateAccountType(CreateAccountTypeParameters parameters)
         {

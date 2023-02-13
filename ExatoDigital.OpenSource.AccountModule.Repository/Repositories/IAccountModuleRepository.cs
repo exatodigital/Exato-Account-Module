@@ -18,10 +18,11 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Repositories
     {
         public Task<CreateAccountResult> CreateAccount(CreateAccountParameters parameters);
         public Task<CreateAccountTypeResult> CreateAccountType(CreateAccountTypeParameters parameters);
+        public Task<RetrieveAccountTypeResult> RetrieveAccountType(RetrieveAccountTypeParameters parameters);
         public Task<CreateCurrencyResult> CreateCurrency(CreateCurrencyParameters parameters);
         public Task<RetrieveCurrencyResult> RetrieveCurrency(RetrieveCurrencyParameters parameters);
-        public Task<DeleteCurrencyResult> DeleteCurrency(DeleteCurrencyParameters parameters);
         public Task<UpdateCurrencyResult> UpdateCurrency(UpdateCurrencyParameters parameters);
+        public Task<DeleteCurrencyResult> DeleteCurrency(DeleteCurrencyParameters parameters);
         public Task<BlockUserBalanceResult> BlockUserBalance(BlockUserBalanceParameters parameters);
     }
 }

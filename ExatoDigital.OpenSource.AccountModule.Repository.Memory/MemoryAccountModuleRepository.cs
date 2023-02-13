@@ -80,7 +80,22 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
 
             return new CreateAccountTypeResult() { Success = true, accountType = accountType };
         }
+        public async Task<RetrieveAccountTypeResult> RetrieveAccountType(RetrieveAccountTypeParameters parameters)
+        {
+            IQueryable<AccountType> query = _accountModuleDbContext.AccountType;
+            if (parameters.AccountTypeId != null)
+                query = query.AsQueryable().Where(c => c.AccountTypeId == parameters.AccountTypeId);
+            if (parameters.AccountTypeExternalUid != null)
+                query = query.AsQueryable().Where(c => c.AccountTypeExternalUid == parameters.AccountTypeExternalUid);
+            if (parameters.Name != null)
+                query = query.AsQueryable().Where(c => c.Name == parameters.Name);
 
+            var result = await query.AsNoTracking().FirstOrDefaultAsync();
+            if (result != null) 
+                return new RetrieveAccountTypeResult() { AccountType = result, Success = true };
+            else
+                return new RetrieveAccountTypeResult() { AccountType = null, Success = false };
+        }
         public async Task<CreateCurrencyResult> CreateCurrency(CreateCurrencyParameters parameters)
         {
             var currency = new Currency

@@ -10,6 +10,6 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Response.AccountTypeResul
 {
     public class CreateAccountTypeResult : AccountModuleResult
     {
-        public AccountType? accountType;
+        public AccountType accountType;
     }
 }

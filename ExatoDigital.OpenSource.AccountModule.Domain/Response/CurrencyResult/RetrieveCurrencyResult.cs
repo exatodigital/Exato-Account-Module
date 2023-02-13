@@ -9,7 +9,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Response.CurrencyResult
 {
     public class RetrieveCurrencyResult : AccountModuleResult   
     {
-        public Currency Currency { get; set; }
+        public Currency? Currency { get; set; }
 
     }
 }

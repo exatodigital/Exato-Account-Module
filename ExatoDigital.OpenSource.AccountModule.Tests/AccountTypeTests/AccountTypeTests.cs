@@ -31,5 +31,19 @@ namespace ExatoDigital.OpenSource.AccountModule.Tests.AccountTypeTests
             var createAccountType = await _accountModuleFacade.CreateAccountType(createAccountTypeParams);
             Assert.IsTrue(createAccountType.Success);
         }
+        [TestMethod]
+        public async Task RetrieveAccountTypeSuccess()
+        {
+            var createAccountTypeParams = new CreateAccountTypeParameters("Teste");
+            var createAccountType = await _accountModuleFacade.CreateAccountType(createAccountTypeParams);
+            if (createAccountType.Success)
+            {
+                var retrieveAccountTypeParameters = new RetrieveAccountTypeParameters(1);
+                var retrieveAccountType = await _accountModuleFacade.RetrieveAccountType(retrieveAccountTypeParameters);
+                Assert.IsTrue(retrieveAccountType.Success);
+            }
+            else
+                return;
+        }
     }
 }
