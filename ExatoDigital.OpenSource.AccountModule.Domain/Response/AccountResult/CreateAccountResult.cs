@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ExatoDigital.OpenSource.AccountModule.Domain.Response
+namespace ExatoDigital.OpenSource.AccountModule.Domain.Response.AccountResult
 {
     public class CreateAccountResult : AccountModuleResult
     {
         #region Propriedades
-        public string? Result {get;set;}
-        public Account? Account { get;set;}
+        public string? Result { get; set; }
+        public Account? Account { get; set; }
 
         #endregion
 

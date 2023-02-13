@@ -1,6 +1,4 @@
-﻿using ExatoDigital.OpenSource.AccountModule.Domain.Parameters;
-using ExatoDigital.OpenSource.AccountModule.Domain.Response;
-using ExatoDigital.OpenSource.AccountModule.Repository.Repositories;
+﻿using ExatoDigital.OpenSource.AccountModule.Repository.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +8,14 @@ using ExatoDigital.OpenSource.AccountModule.Domain.Models;
 using ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.CurrencyParameters;
+using ExatoDigital.OpenSource.AccountModule.Domain.Response.CurrencyResult;
+using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.AccountParameters;
+using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.AccountTypeParameters;
+using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.UserBalanceParameters;
+using ExatoDigital.OpenSource.AccountModule.Domain.Response.AccountTypeResult;
+using ExatoDigital.OpenSource.AccountModule.Domain.Response.AccountResult;
+using ExatoDigital.OpenSource.AccountModule.Domain.Response.UserBalanceResult;
 
 namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
 {
@@ -46,8 +52,8 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
                 DeletedBy = 0
             });
             await _accountModuleDbContext.SaveChangesAsync();
-            var resultado = _accountModuleDbContext.Account.Where(x => x.AccountId == 1).Include(x => x.AccountType).Include(x => x.Currency).FirstOrDefault();
-            return new CreateAccountResult() { Success = true };
+            var account = _accountModuleDbContext.Account.Where(x => x.AccountId == 1).Include(x => x.AccountType).Include(x => x.Currency).FirstOrDefault();
+            return new CreateAccountResult() { Success = true, Account = account };
         }
 
         public async Task<CreateAccountTypeResult> CreateAccountType(CreateAccountTypeParameters parameters)
@@ -104,10 +110,51 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
 
             return new CreateCurrencyResult() { Success = true, currency = currency};
         }
+        public async Task<RetrieveCurrencyResult> RetrieveCurrency(RetrieveCurrencyParameters parameters)
+        {
+            IQueryable<Currency> query = _accountModuleDbContext.Currency;
+            if (parameters.CurrencyId != null)
+                query = query.AsQueryable().Where(c => c.CurrencyId == parameters.CurrencyId);
+            if (parameters.CurrencyExternalUid != null)
+                query = query.AsQueryable().Where(c => c.CurrencyExternalUid == parameters.CurrencyExternalUid);
+            if (parameters.InternalName != null)
+                query = query.AsQueryable().Where(c => c.InternalName == parameters.InternalName);
+
+            var result = await query.AsNoTracking().FirstOrDefaultAsync();
+            if (result != null)
+                return new RetrieveCurrencyResult() { Currency = result, Success = true };
+            else
+                return new RetrieveCurrencyResult() { Currency = result, Success = false };
+        }
+        public async Task<UpdateCurrencyResult> UpdateCurrency(UpdateCurrencyParameters parameters)
+        {
+            _accountModuleDbContext.Update(parameters.Currency);
+            await _accountModuleDbContext.SaveChangesAsync();
+
+            return new UpdateCurrencyResult() { Success = true };
+        }
+
+        public async Task<DeleteCurrencyResult> DeleteCurrency(DeleteCurrencyParameters parameters)
+        {
+            var retrieveCurrencyParameters = new RetrieveCurrencyParameters(currencyId: parameters.CurrencyId);
+            var currency = RetrieveCurrency(retrieveCurrencyParameters);
+            if (currency.Result.Success == true)
+            {
+                currency.Result.Currency.DeletedAt = DateTime.UtcNow;
+                currency.Result.Currency.DeletedBy = parameters.DeletedBy;
+                var updateCurrencyParameters = new UpdateCurrencyParameters(currency.Result.Currency);
+                await UpdateCurrency(updateCurrencyParameters);
+                return new DeleteCurrencyResult() { Success = true };
+            }
+            else
+                return new DeleteCurrencyResult() { Success = false };
+        }
+
         public async Task<BlockUserBalanceResult> BlockUserBalance(BlockUserBalanceParameters parameters)
         {
             return null;
         }
+
         public static void Clear() {}
     }
 }

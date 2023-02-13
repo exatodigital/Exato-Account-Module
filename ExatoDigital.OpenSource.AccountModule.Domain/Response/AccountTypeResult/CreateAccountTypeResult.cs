@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ExatoDigital.OpenSource.AccountModule.Domain.Response
+namespace ExatoDigital.OpenSource.AccountModule.Domain.Response.AccountTypeResult
 {
     public class CreateAccountTypeResult : AccountModuleResult
     {

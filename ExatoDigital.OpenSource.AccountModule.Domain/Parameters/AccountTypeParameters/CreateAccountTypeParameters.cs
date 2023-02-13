@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ExatoDigital.OpenSource.AccountModule.Domain.Parameters
+namespace ExatoDigital.OpenSource.AccountModule.Domain.Parameters.AccountTypeParameters
 {
     public class CreateAccountTypeParameters
     {
-        public CreateAccountTypeParameters(string name, bool? negativeBalanceAllowed = false, bool? allowedToExpire = false, DateTime? expireAt = null) 
+        public CreateAccountTypeParameters(string name, bool? negativeBalanceAllowed = false, bool? allowedToExpire = false, DateTime? expireAt = null)
         {
             Name = name;
             NegativeBalanceAllowed = negativeBalanceAllowed;

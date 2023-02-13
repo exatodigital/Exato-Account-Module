@@ -13,6 +13,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.CurrencyParameters;
+using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.AccountTypeParameters;
+using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.AccountParameters;
 
 namespace ExatoDigital.OpenSource.AccountModule.Tests.AccountTests
 {

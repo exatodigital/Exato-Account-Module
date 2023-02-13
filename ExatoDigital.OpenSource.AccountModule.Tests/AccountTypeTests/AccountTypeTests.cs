@@ -1,5 +1,7 @@
 ﻿using ExatoDigital.OpenSource.AccountModule.Core;
 using ExatoDigital.OpenSource.AccountModule.Domain.Parameters;
+using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.AccountTypeParameters;
+using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.CurrencyParameters;
 using ExatoDigital.OpenSource.AccountModule.Repository.Memory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;

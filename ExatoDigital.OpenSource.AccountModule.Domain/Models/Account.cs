@@ -15,9 +15,9 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Models
         public int CurrencyId { get; set; }
         public Guid AccountUid { get; set; }
         public Guid AccountExternalUid { get; set; }
-        public int AccountClientId { get; set; }
-        public Guid MasterAccountUid { get; set; }
-        public Guid RelatedAccountUid { get; set; }
+        public int? AccountClientId { get; set; }
+        public Guid? MasterAccountUid { get; set; }
+        public Guid? RelatedAccountUid { get; set; }
         public string InternalName { get; set; }
         public string LongDisplayName { get; set; }
         public string ShortDisplayName { get; set; }
@@ -27,11 +27,11 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Models
         public string? Owner { get; set; }
         public decimal CurrentBalance { get; set; }
         public DateTime CreatedAt { get; set; }
-        public int CreatedBy { get; set; }
-        public DateTime UpdatedAt { get; set; }
-        public int UpdatedBy { get; set; }
-        public DateTime DeletedAt { get; set; }
-        public int DeletedBy { get; set; }
+        public int? CreatedBy { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public int? UpdatedBy { get; set; }
+        public DateTime? DeletedAt { get; set; }
+        public int? DeletedBy { get; set; }
         public virtual AccountType? AccountType { get; set; }
         public virtual Currency? Currency { get; set; }
         public ICollection<Transaction>? Transactions { get; set; }

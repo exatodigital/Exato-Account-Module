@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ExatoDigital.OpenSource.AccountModule.Domain.Parameters
+namespace ExatoDigital.OpenSource.AccountModule.Domain.Parameters.AccountParameters
 {
     public class CreateAccountParameters : AccountModuleParameters
     {
@@ -34,8 +34,8 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Parameters
         public Guid? MasterAccountUid { get; set; }
         public Guid? RelatedAccountUid { get; set; }
         public int CurrencyId { get; set; }
-        public int AccountTypeId { get; set;}
-    
+        public int AccountTypeId { get; set; }
+
         #endregion
 
     }

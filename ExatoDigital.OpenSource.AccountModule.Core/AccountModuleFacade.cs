@@ -1,7 +1,5 @@
 ﻿using ExatoDigital.OpenSource.AccountModule.Repository.Repositories;
 using ExatoDigital.OpenSource.AccountModule.Domain;
-using ExatoDigital.OpenSource.AccountModule.Domain.Response;
-using ExatoDigital.OpenSource.AccountModule.Domain.Parameters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +7,14 @@ using System.Text;
 using System.Threading.Tasks;
 using ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositories;
 using Microsoft.EntityFrameworkCore;
+using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.CurrencyParameters;
+using ExatoDigital.OpenSource.AccountModule.Domain.Response.CurrencyResult;
+using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.AccountParameters;
+using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.AccountTypeParameters;
+using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.UserBalanceParameters;
+using ExatoDigital.OpenSource.AccountModule.Domain.Response.AccountTypeResult;
+using ExatoDigital.OpenSource.AccountModule.Domain.Response.AccountResult;
+using ExatoDigital.OpenSource.AccountModule.Domain.Response.UserBalanceResult;
 
 
 // Para logs: https://net-commons.github.io/common-logging/, https://www.nuget.org/packages/Common.Logging
@@ -22,9 +28,6 @@ namespace ExatoDigital.OpenSource.AccountModule.Core
     {
         private readonly IAccountModuleRepositoryFactory _accountModuleRepositoryFactory;
 
-        /// <summary>
-        /// TODO: Leandro - Ao invés de passar o repositório, passar uma factory que cria um repositório. Assim você consegue controlar melhor o ciclo de vida das instências (IAccountModuleRepositoryFactory). - OK
-        /// </summary>
         /// <param name="accountModuleRepositoryFactory"></param>
         public AccountModuleFacade(IAccountModuleRepositoryFactory accountModuleRepositoryFactory)
         {
@@ -51,6 +54,26 @@ namespace ExatoDigital.OpenSource.AccountModule.Core
         {
             var repository = _accountModuleRepositoryFactory.Create();
             var response = await repository.CreateCurrency(parameters);
+            return response;
+        }
+
+        public async Task<RetrieveCurrencyResult> RetrieveCurrency(RetrieveCurrencyParameters parameters)
+        {
+            var repository = _accountModuleRepositoryFactory.Create();
+            var response = await repository.RetrieveCurrency(parameters);
+            return response;
+        }
+
+        public async Task<UpdateCurrencyResult> UpdateCurrency(UpdateCurrencyParameters parameters)
+        {
+            var repository = _accountModuleRepositoryFactory.Create();
+            var response = await repository.UpdateCurrency(parameters);
+            return response;
+        }
+        public async Task<DeleteCurrencyResult> DeleteCurrency(DeleteCurrencyParameters parameters)
+        {
+            var repository = _accountModuleRepositoryFactory.Create();
+            var response = await repository.DeleteCurrency(parameters);
             return response;
         }
 
