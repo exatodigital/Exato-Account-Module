@@ -42,7 +42,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Tests.AccountTests
             var currency = await _accountModuleFacade.CreateCurrency(createCurrencyParams);
 
             //Criando Account
-            var createAccountParams = new CreateAccountParameters("Exato", "Exato Digital", "Exato",null,null , 10 , null,null, currencyId: currency.currency.CurrencyId, accountTypeId: accountType.accountType.AccountTypeId);
+            var createAccountParams = new CreateAccountParameters("Exato", "Exato Digital", "Exato",null,null , 10 , null,null, currency.currency.CurrencyId, accountType.accountType.AccountTypeId);
             var createAccount = await _accountModuleFacade.CreateAccount(createAccountParams);
             Assert.IsTrue(createAccount.Success);
         }

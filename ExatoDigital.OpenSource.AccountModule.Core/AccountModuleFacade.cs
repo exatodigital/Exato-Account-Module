@@ -1,12 +1,5 @@
 ﻿using ExatoDigital.OpenSource.AccountModule.Repository.Repositories;
 using ExatoDigital.OpenSource.AccountModule.Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositories;
-using Microsoft.EntityFrameworkCore;
 using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.CurrencyParameters;
 using ExatoDigital.OpenSource.AccountModule.Domain.Response.CurrencyResult;
 using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.AccountParameters;
@@ -15,6 +8,8 @@ using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.UserBalanceParamet
 using ExatoDigital.OpenSource.AccountModule.Domain.Response.AccountTypeResult;
 using ExatoDigital.OpenSource.AccountModule.Domain.Response.AccountResult;
 using ExatoDigital.OpenSource.AccountModule.Domain.Response.UserBalanceResult;
+using FluentValidation;
+using ExatoDigital.OpenSource.AccountModule.Domain.Validations;
 
 
 // Para logs: https://net-commons.github.io/common-logging/, https://www.nuget.org/packages/Common.Logging
@@ -40,6 +35,10 @@ namespace ExatoDigital.OpenSource.AccountModule.Core
         // public async Task<CreateAccountResult> CreateAccount(CreateAccountParameters parameters) - OK 
         public async Task<CreateAccountResult> CreateAccount(CreateAccountParameters parameters)
         {
+            // Valida paramêtros
+            var validation = new CreateAccountParametersValidator();
+            validation.ValidateAndThrow(parameters);
+
             var repository = _accountModuleRepositoryFactory.Create();
             var response = await repository.CreateAccount(parameters);
             return response;

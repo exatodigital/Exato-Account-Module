@@ -9,5 +9,6 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Response.AccountTypeResul
 {
     public class UpdateAccountTypeResult : AccountModuleResult
     {
+        public AccountType? AccountType { get; set; }
     }
 }
