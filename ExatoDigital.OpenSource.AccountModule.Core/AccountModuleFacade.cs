@@ -56,6 +56,12 @@ namespace ExatoDigital.OpenSource.AccountModule.Core
             var response = await repository.RetrieveAccountType(parameters);
             return response;
         }
+        public async Task<UpdateAccountTypeResult> UpdateAccountType(UpdateAccountTypeParameters parameters)
+        {
+            var repository = _accountModuleRepositoryFactory.Create();
+            var response = await repository.UpdateAccountType(parameters);
+            return response;
+        }
         public async Task<CreateCurrencyResult> CreateCurrency(CreateCurrencyParameters parameters)
         {
             var repository = _accountModuleRepositoryFactory.Create();

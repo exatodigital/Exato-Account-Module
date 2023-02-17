@@ -106,9 +106,19 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
             else
                 return new RetrieveAccountTypeResult() { AccountType = null, Success = false };
         }
-        public async Task<CreateAccountTypeResult> UpdateAccountType(CreateAccountTypeParameters parameters)
+        public async Task<UpdateAccountTypeResult> UpdateAccountType(UpdateAccountTypeParameters parameters)
         {
-            return new CreateAccountTypeResult();
+            try
+            {
+                DbContext.Update(parameters.AccountType);
+                await DbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return new UpdateAccountTypeResult() { Success = false };
+            }
+
+            return new UpdateAccountTypeResult() { Success = true };
         }
         public async Task<CreateAccountTypeResult> DeleteAccountType(CreateAccountTypeParameters parameters)
         {
@@ -163,8 +173,15 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
         }
         public async Task<UpdateCurrencyResult> UpdateCurrency(UpdateCurrencyParameters parameters)
         {
-            DbContext.Update(parameters.Currency);
-            await DbContext.SaveChangesAsync();
+            try
+            {
+                DbContext.Update(parameters.Currency);
+                await DbContext.SaveChangesAsync();
+            }
+            catch(Exception e)
+            {
+                return new UpdateCurrencyResult() { Success = false };
+            }
 
             return new UpdateCurrencyResult() { Success = true };
         }

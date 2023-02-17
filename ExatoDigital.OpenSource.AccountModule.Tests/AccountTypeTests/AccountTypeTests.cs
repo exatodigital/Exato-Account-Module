@@ -45,5 +45,15 @@ namespace ExatoDigital.OpenSource.AccountModule.Tests.AccountTypeTests
             else
                 return;
         }
+        [TestMethod]
+        public async Task UpdatAccountTypeSuccess()
+        {
+            var createAccountTypeParameters = new CreateAccountTypeParameters("Teste");
+            var result = await _accountModuleFacade.CreateAccountType(createAccountTypeParameters);
+            result.accountType.Name = "Mudei o nome";
+            var updateAccountTypeParameters = new UpdateAccountTypeParameters(accountType: result.accountType);
+            var updateAccountType = await _accountModuleFacade.UpdateAccountType(updateAccountTypeParameters);
+            Assert.IsTrue(updateAccountType.Success);
+        }
     }
 }

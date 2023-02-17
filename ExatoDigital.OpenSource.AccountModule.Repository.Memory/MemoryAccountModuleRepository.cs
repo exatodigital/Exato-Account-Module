@@ -96,6 +96,20 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
             else
                 return new RetrieveAccountTypeResult() { AccountType = null, Success = false };
         }
+        public async Task<UpdateAccountTypeResult> UpdateAccountType(UpdateAccountTypeParameters parameters)
+        {
+            try
+            {
+                _accountModuleDbContext.Update(parameters.AccountType);
+                await _accountModuleDbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return new UpdateAccountTypeResult() { Success = false };
+            }
+
+            return new UpdateAccountTypeResult() { Success = true };
+        }
         public async Task<CreateCurrencyResult> CreateCurrency(CreateCurrencyParameters parameters)
         {
             var currency = new Currency
