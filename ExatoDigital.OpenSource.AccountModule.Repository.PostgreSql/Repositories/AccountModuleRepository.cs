@@ -27,8 +27,8 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
             {
                 AccountTypeId = parameters.AccountTypeId,
                 CurrencyId = parameters.CurrencyId,
-                AccountUid = default,
-                AccountExternalUid = default,
+                AccountUid = Guid.NewGuid(),
+                AccountExternalUid = Guid.NewGuid(),
                 AccountClientId = null,
                 MasterAccountUid = parameters.MasterAccountUid,
                 RelatedAccountUid = parameters.MasterAccountUid,
@@ -50,9 +50,19 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
             var account = DbContext.Account.Where(x => x.AccountId == 1).Include(x => x.AccountType).Include(x => x.Currency).FirstOrDefault();
             return new CreateAccountResult() { Success = true, Account = account };
         }
-        public async Task<CreateAccountResult> RetrieveAccount(CreateAccountParameters parameters)
+        public async Task<RetrieveAccountResult> RetrieveAccount(int? accountId, Guid? accountExternalUid)
         {
-            return new CreateAccountResult();
+            IQueryable<Account> query = DbContext.Account;
+            if (accountId != null)
+                query = query.AsQueryable().Where(c => c.AccountId == accountId);
+            if (accountExternalUid != null)
+                query = query.AsQueryable().Where(c => c.AccountExternalUid == accountExternalUid);
+
+            var result = await query.AsNoTracking().FirstOrDefaultAsync();
+            if (result != null)
+                return new RetrieveAccountResult() { Account = result, Success = true };
+            else
+                return new RetrieveAccountResult() { Account = null, Success = false };
         }
         public async Task<CreateAccountResult> UpdateAccount(CreateAccountParameters parameters)
         {
@@ -108,16 +118,8 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
         }
         public async Task<UpdateAccountTypeResult> UpdateAccountType(UpdateAccountTypeParameters parameters)
         {
-            try
-            {
-                DbContext.Update(parameters.AccountType);
-                await DbContext.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                return new UpdateAccountTypeResult() { Success = false };
-            }
-
+            DbContext.Update(parameters.AccountType);
+            await DbContext.SaveChangesAsync();
             return new UpdateAccountTypeResult() { Success = true };
         }
         public async Task<CreateAccountTypeResult> DeleteAccountType(CreateAccountTypeParameters parameters)
@@ -173,16 +175,8 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
         }
         public async Task<UpdateCurrencyResult> UpdateCurrency(UpdateCurrencyParameters parameters)
         {
-            try
-            {
-                DbContext.Update(parameters.Currency);
-                await DbContext.SaveChangesAsync();
-            }
-            catch(Exception e)
-            {
-                return new UpdateCurrencyResult() { Success = false };
-            }
-
+            DbContext.Update(parameters.Currency);
+            await DbContext.SaveChangesAsync();
             return new UpdateCurrencyResult() { Success = true };
         }
         public async Task<DeleteCurrencyResult> DeleteCurrency(DeleteCurrencyParameters parameters)

@@ -56,6 +56,22 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
             return new CreateAccountResult() { Success = true, Account = account };
         }
 
+        public async Task<RetrieveAccountResult> RetrieveAccount(int? accountId, Guid? accountExternalUid)
+        {
+            IQueryable<Account> query = _accountModuleDbContext.Account;
+            if (accountId != null)
+                query = query.AsQueryable().Where(c => c.AccountId == accountId);
+            if (accountExternalUid != null)
+                query = query.AsQueryable().Where(c => c.AccountExternalUid == accountExternalUid);
+
+            var result = await query.AsNoTracking().FirstOrDefaultAsync();
+            if (result != null)
+                return new RetrieveAccountResult() { Account = result, Success = true };
+            else
+                return new RetrieveAccountResult() { Account = null, Success = false };
+        }
+
+
         public async Task<CreateAccountTypeResult> CreateAccountType(CreateAccountTypeParameters parameters)
         {
             var accountType = new AccountType
@@ -98,16 +114,8 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
         }
         public async Task<UpdateAccountTypeResult> UpdateAccountType(UpdateAccountTypeParameters parameters)
         {
-            try
-            {
-                _accountModuleDbContext.Update(parameters.AccountType);
-                await _accountModuleDbContext.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                return new UpdateAccountTypeResult() { Success = false };
-            }
-
+            _accountModuleDbContext.Update(parameters.AccountType);
+            await _accountModuleDbContext.SaveChangesAsync();
             return new UpdateAccountTypeResult() { Success = true };
         }
         public async Task<CreateCurrencyResult> CreateCurrency(CreateCurrencyParameters parameters)

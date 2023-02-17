@@ -9,13 +9,12 @@ using ExatoDigital.OpenSource.AccountModule.Domain.Response.AccountTypeResult;
 using ExatoDigital.OpenSource.AccountModule.Domain.Response.AccountResult;
 using ExatoDigital.OpenSource.AccountModule.Domain.Response.UserBalanceResult;
 using FluentValidation;
-using ExatoDigital.OpenSource.AccountModule.Domain.Validations;
+using ExatoDigital.OpenSource.AccountModule.Domain.Validations.AccountParametersValidation;
 
 
 // Para logs: https://net-commons.github.io/common-logging/, https://www.nuget.org/packages/Common.Logging
 // Para injeção de dependências: Autofac / Ninject
 // Para JSON: Newtonsoft (Json.NET) / Microsoft
-// Para testes, talvez seja melhor usar da própria Microsoft
 
 namespace ExatoDigital.OpenSource.AccountModule.Core
 {
@@ -27,7 +26,6 @@ namespace ExatoDigital.OpenSource.AccountModule.Core
         public AccountModuleFacade(IAccountModuleRepositoryFactory accountModuleRepositoryFactory)
         {
             _accountModuleRepositoryFactory = accountModuleRepositoryFactory ?? throw new ArgumentNullException(nameof(accountModuleRepositoryFactory));
-
         }
 
         // public abstract class AccountModuleResult (deu sucesso ou não, mensagens de erro e etc., ou seja, tudo o que for comum para todas as operações.) - OK
@@ -39,9 +37,31 @@ namespace ExatoDigital.OpenSource.AccountModule.Core
             var validation = new CreateAccountParametersValidator();
             validation.ValidateAndThrow(parameters);
 
-            var repository = _accountModuleRepositoryFactory.Create();
-            var response = await repository.CreateAccount(parameters);
-            return response;
+            try
+            {
+                var repository = _accountModuleRepositoryFactory.Create();
+                if (parameters.MasterAccountUid != null)
+                {
+                    var masterAccountExists = await repository.RetrieveAccount(null, parameters.MasterAccountUid);
+                    if (masterAccountExists.Error)
+                        return new CreateAccountResult { Success = false, Error = true, ErrorMessage = "A conta passada como Master não existe" };
+                }
+                if (parameters.RelatedAccountUid != null)
+                {
+                    var relatedAccount = await repository.RetrieveAccount(null, parameters.RelatedAccountUid);
+                    if (relatedAccount.Error)
+                        return new CreateAccountResult { Success = false, Error = true, ErrorMessage = "A conta passada como Related não existe" };
+                }
+
+                var response = await repository.CreateAccount(parameters);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
+                // E aqui fazer um LOG (?)
+            }
         }
         public async Task<CreateAccountTypeResult> CreateAccountType(CreateAccountTypeParameters parameters)
         {
