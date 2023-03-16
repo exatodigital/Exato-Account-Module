@@ -64,13 +64,15 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
             else
                 return new RetrieveAccountResult() { Account = null, Success = false };
         }
-        public async Task<CreateAccountResult> UpdateAccount(CreateAccountParameters parameters)
+        public async Task<UpdateAccountResult> UpdateAccount(UpdateAccountParameters parameters)
         {
-            return new CreateAccountResult();
+            DbContext.Update(parameters.Account);
+            await DbContext.SaveChangesAsync();
+            return new UpdateAccountResult() { Success = true };
         }
-        public async Task<CreateAccountResult> DeleteAccount(CreateAccountParameters parameters)
+        public async Task<DeleteAccountResult> DeleteAccount(DeleteAccountParameters parameters)
         {
-            return new CreateAccountResult();
+            return new DeleteAccountResult();
         }
         public async Task<CreateAccountResult> QueryAccount(CreateAccountParameters parameters)
         {

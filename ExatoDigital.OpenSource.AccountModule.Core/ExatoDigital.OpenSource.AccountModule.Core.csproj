@@ -8,7 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ExatoDigital.OpenSource.AccountModule.Domain\ExatoDigital.OpenSource.AccountModule.Domain.csproj" />
+    <ProjectReference Include="..\ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql\ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.csproj" />
     <ProjectReference Include="..\ExatoDigital.OpenSource.AccountModule.Repository\ExatoDigital.OpenSource.AccountModule.Repository.csproj" />
   </ItemGroup>
 

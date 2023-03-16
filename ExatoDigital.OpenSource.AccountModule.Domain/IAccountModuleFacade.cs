@@ -17,6 +17,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain
     public interface IAccountModuleFacade
     {
         public Task<CreateAccountResult> CreateAccount(CreateAccountParameters parameters);
+        public Task<UpdateAccountResult> UpdateAccount(UpdateAccountParameters parameters);
         public Task<CreateAccountTypeResult> CreateAccountType(CreateAccountTypeParameters parameters);
         public Task<RetrieveAccountTypeResult> RetrieveAccountType(RetrieveAccountTypeParameters parameters);
         public Task<UpdateAccountTypeResult> UpdateAccountType(UpdateAccountTypeParameters parameters);

@@ -70,7 +70,16 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
             else
                 return new RetrieveAccountResult() { Account = null, Success = false };
         }
-
+        public async Task<UpdateAccountResult> UpdateAccount(UpdateAccountParameters parameters)
+        {
+            _accountModuleDbContext.Update(parameters.Account);
+            await _accountModuleDbContext.SaveChangesAsync();
+            return new UpdateAccountResult() { Success = true };
+        }
+        public async Task<DeleteAccountResult> DeleteAccount(DeleteAccountParameters parameters)
+        {
+            return new DeleteAccountResult();
+        }
 
         public async Task<CreateAccountTypeResult> CreateAccountType(CreateAccountTypeParameters parameters)
         {

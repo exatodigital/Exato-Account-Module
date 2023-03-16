@@ -63,6 +63,49 @@ namespace ExatoDigital.OpenSource.AccountModule.Core
                 // E aqui fazer um LOG (?)
             }
         }
+        public async Task<RetrieveAccountResult> RetrieveAccount(RetrieveAccountParameters parameters)
+        {
+            try
+            {
+                var repository = _accountModuleRepositoryFactory.Create();
+                var response = await repository.RetrieveAccount(parameters.AccountId, parameters.AccountExternalUid);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
+        public async Task<UpdateAccountResult> UpdateAccount(UpdateAccountParameters parameters)
+        {
+            try
+            {
+                var repository = _accountModuleRepositoryFactory.Create();
+                var response = await repository.UpdateAccount(parameters);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
+
+        public async Task<DeleteAccountResult> DeleteAccount(DeleteAccountParameters parameters)
+        {
+            try
+            {
+                var repository = _accountModuleRepositoryFactory.Create();
+                var response = await repository.DeleteAccount(parameters);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
         public async Task<CreateAccountTypeResult> CreateAccountType(CreateAccountTypeParameters parameters)
         {
             var repository = _accountModuleRepositoryFactory.Create();
@@ -158,6 +201,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Core
         // public async Task<JoinChildrenAccountsResult> JoinChildrenAccounts(JoinChildrenAccountsParameters parameters)
         // public async Task<BlockUserBalanceResult> BlockUserBalance(BlockUserBalanceParameters parameters)
         // public async Task<UnblockUserBalanceResult> UnblockUserBalance(UnblockUserBalanceParameters parameters)
+
 
     }
 }

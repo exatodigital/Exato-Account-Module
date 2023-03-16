@@ -18,6 +18,8 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Repositories
     {
         public Task<CreateAccountResult> CreateAccount(CreateAccountParameters parameters);
         public Task<RetrieveAccountResult> RetrieveAccount(int? accountId, Guid? accountExternalUid);
+        public Task<UpdateAccountResult> UpdateAccount(UpdateAccountParameters parameters);
+        public Task<DeleteAccountResult> DeleteAccount(DeleteAccountParameters parameters);
         public Task<CreateAccountTypeResult> CreateAccountType(CreateAccountTypeParameters parameters);
         public Task<RetrieveAccountTypeResult> RetrieveAccountType(RetrieveAccountTypeParameters parameters);
         public Task<UpdateAccountTypeResult> UpdateAccountType(UpdateAccountTypeParameters parameters);
