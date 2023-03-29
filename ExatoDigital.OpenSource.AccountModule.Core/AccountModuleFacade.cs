@@ -10,6 +10,7 @@ using ExatoDigital.OpenSource.AccountModule.Domain.Response.AccountResult;
 using ExatoDigital.OpenSource.AccountModule.Domain.Response.UserBalanceResult;
 using FluentValidation;
 using ExatoDigital.OpenSource.AccountModule.Domain.Validations.AccountParametersValidation;
+using ExatoDigital.OpenSource.AccountModule.Domain.Models;
 
 
 // Para logs: https://net-commons.github.io/common-logging/, https://www.nuget.org/packages/Common.Logging
@@ -33,25 +34,35 @@ namespace ExatoDigital.OpenSource.AccountModule.Core
         // public async Task<CreateAccountResult> CreateAccount(CreateAccountParameters parameters) - OK 
         public async Task<CreateAccountResult> CreateAccount(CreateAccountParameters parameters)
         {
-            // Valida paramêtros
             var validation = new CreateAccountParametersValidator();
             validation.ValidateAndThrow(parameters);
 
             try
             {
                 var repository = _accountModuleRepositoryFactory.Create();
+
                 if (parameters.MasterAccountUid != null)
                 {
                     var masterAccountExists = await repository.RetrieveAccount(null, parameters.MasterAccountUid);
                     if (masterAccountExists.Error)
-                        return new CreateAccountResult { Success = false, Error = true, ErrorMessage = "A conta passada como Master não existe" };
+                        return new CreateAccountResult { Success = masterAccountExists.Success, Error = masterAccountExists.Error, ErrorMessage = masterAccountExists.ErrorMessage };
                 }
                 if (parameters.RelatedAccountUid != null)
                 {
                     var relatedAccount = await repository.RetrieveAccount(null, parameters.RelatedAccountUid);
                     if (relatedAccount.Error)
-                        return new CreateAccountResult { Success = false, Error = true, ErrorMessage = "A conta passada como Related não existe" };
+                        return new CreateAccountResult { Success = relatedAccount.Success, Error = relatedAccount.Error, ErrorMessage = relatedAccount.ErrorMessage };
                 }
+
+                var retrieveCurrencyParameters = new RetrieveCurrencyParameters(currencyId: parameters.CurrencyId);
+                var currency = await repository.RetrieveCurrency(retrieveCurrencyParameters);
+                if (currency.Error)
+                    return new CreateAccountResult { Success = currency.Success, Error = currency.Error, ErrorMessage = currency.ErrorMessage };
+
+                var retrieveAccountTypeParameters = new RetrieveAccountTypeParameters(accountTypeId: parameters.AccountTypeId);
+                var accountType = await repository.RetrieveAccountType(retrieveAccountTypeParameters);
+                if (accountType.Error)
+                    return new CreateAccountResult { Success = accountType.Success, Error = accountType.Error, ErrorMessage = accountType.ErrorMessage };
 
                 var response = await repository.CreateAccount(parameters);
                 return response;
@@ -60,7 +71,6 @@ namespace ExatoDigital.OpenSource.AccountModule.Core
             {
                 Console.WriteLine(ex);
                 throw;
-                // E aqui fazer um LOG (?)
             }
         }
         public async Task<RetrieveAccountResult> RetrieveAccount(RetrieveAccountParameters parameters)

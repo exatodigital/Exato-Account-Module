@@ -27,32 +27,31 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
         
         public async Task<CreateAccountResult> CreateAccount(CreateAccountParameters parameters)
         {
-            _accountModuleDbContext.Account.Add(new Account
+            Account account = new Account()
             {
-                AccountId = 1,
                 AccountTypeId = parameters.AccountTypeId,
                 CurrencyId = parameters.CurrencyId,
-                AccountUid = default,
-                AccountExternalUid = default,
-                AccountClientId = 1,
-                MasterAccountUid = default,
-                RelatedAccountUid = default,
+                AccountUid = Guid.NewGuid(),
+                AccountExternalUid = Guid.NewGuid(),
+                AccountClientId = null,
+                MasterAccountUid = parameters.MasterAccountUid,
+                RelatedAccountUid = parameters.MasterAccountUid,
                 InternalName = parameters.InternalName,
                 LongDisplayName = parameters.LongDisplayName,
                 ShortDisplayName = parameters.ShortDisplayName,
                 Description = parameters.Description,
                 Metadata = null,
                 Owner = parameters.Owner,
-                CurrentBalance = 0,
-                CreatedAt = default,
-                CreatedBy = 0,
-                UpdatedAt = default,
-                UpdatedBy = 0,
-                DeletedAt = default,
-                DeletedBy = 0
-            });
+                CurrentBalance = parameters.Balance,
+                CreatedAt = DateTime.Now,
+                CreatedBy = null,
+                UpdatedAt = null,
+                UpdatedBy = null,
+                DeletedAt = null,
+                DeletedBy = null
+            };
+            _accountModuleDbContext.Account.Add(account);
             await _accountModuleDbContext.SaveChangesAsync();
-            var account = _accountModuleDbContext.Account.Where(x => x.AccountId == 1).Include(x => x.AccountType).Include(x => x.Currency).FirstOrDefault();
             return new CreateAccountResult() { Success = true, Account = account };
         }
 

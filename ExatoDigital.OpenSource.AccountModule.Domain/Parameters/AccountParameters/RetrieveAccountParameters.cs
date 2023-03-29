@@ -8,17 +8,17 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Parameters.AccountParamet
 {
     public class RetrieveAccountParameters : AccountModuleParameters
     {
-        public RetrieveAccountParameters(int accountId, Guid? accountExternalUid)
+        public RetrieveAccountParameters(int accountId)
         {
             AccountId = accountId;
-            AccountExternalUid = accountExternalUid;
         }
-        public RetrieveAccountParameters(Guid? accountExternalUid)
+
+        public RetrieveAccountParameters(Guid accountExternalUid)
         {
             AccountExternalUid = accountExternalUid;
         }
 
-        public int? AccountId { get; set; }
-        public Guid? AccountExternalUid { get; set; }
+        public int AccountId { get; set; }
+        public Guid AccountExternalUid { get; set; }
     }
 }

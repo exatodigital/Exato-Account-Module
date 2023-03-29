@@ -23,7 +23,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
 
         public async Task<CreateAccountResult> CreateAccount(CreateAccountParameters parameters)
         {
-            DbContext.Account.Add(new Account
+            Account account = new Account()
             {
                 AccountTypeId = parameters.AccountTypeId,
                 CurrencyId = parameters.CurrencyId,
@@ -45,9 +45,10 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
                 UpdatedBy = null,
                 DeletedAt = null,
                 DeletedBy = null
-            });
+            };
+
+            DbContext.Account.Add(account);
             await DbContext.SaveChangesAsync();
-            var account = DbContext.Account.Where(x => x.AccountId == 1).Include(x => x.AccountType).Include(x => x.Currency).FirstOrDefault();
             return new CreateAccountResult() { Success = true, Account = account };
         }
         public async Task<RetrieveAccountResult> RetrieveAccount(int? accountId, Guid? accountExternalUid)
