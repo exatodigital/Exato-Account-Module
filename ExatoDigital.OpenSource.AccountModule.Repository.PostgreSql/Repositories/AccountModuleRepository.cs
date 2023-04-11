@@ -67,13 +67,32 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
         }
         public async Task<UpdateAccountResult> UpdateAccount(UpdateAccountParameters parameters)
         {
-            DbContext.Update(parameters.Account);
+            var account = DbContext.Account.FirstOrDefault(x => x.AccountId == parameters.AccountId);
+            if (account != null)
+            {
+                account.AccountExternalUid = parameters.AccountExternalUid ?? account.AccountExternalUid;
+                account.InternalName = parameters.InternalName ?? account.InternalName;
+                account.LongDisplayName = parameters.LongDisplayName ?? account.LongDisplayName;
+                account.ShortDisplayName = parameters.ShortDisplayName ?? account.ShortDisplayName;
+                account.Description = parameters.Description ?? account.Description;
+                account.Metadata = parameters.Metadata ?? account.Metadata;
+            }
             await DbContext.SaveChangesAsync();
             return new UpdateAccountResult() { Success = true };
         }
         public async Task<DeleteAccountResult> DeleteAccount(DeleteAccountParameters parameters)
         {
-            return new DeleteAccountResult();
+            var account = RetrieveAccount(parameters.AccountId, parameters.AccountExternalUid);
+            if (account.Result.Success == true)
+            {
+                var accountDeleted = DbContext.Account.Where(x => x.AccountId == account.Result.Account.AccountId).FirstOrDefault();
+                accountDeleted.DeletedAt = DateTime.UtcNow;
+                accountDeleted.DeletedBy = parameters.DeletedBy;
+                await DbContext.SaveChangesAsync();
+                return new DeleteAccountResult() { Success = true };
+            }
+            else
+                return new DeleteAccountResult() { Success = false };
         }
         public async Task<CreateAccountResult> QueryAccount(CreateAccountParameters parameters)
         {
@@ -125,9 +144,20 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
             await DbContext.SaveChangesAsync();
             return new UpdateAccountTypeResult() { Success = true };
         }
-        public async Task<CreateAccountTypeResult> DeleteAccountType(CreateAccountTypeParameters parameters)
+        public async Task<DeleteAccountTypeResult> DeleteAccountType(DeleteAccountTypeParameters parameters)
         {
-            return new CreateAccountTypeResult();
+            var accountTypeParameters = new RetrieveAccountTypeParameters(accountTypeId: parameters.AccountTypeId);
+            var accountType = RetrieveAccountType(accountTypeParameters);
+            if (accountType.Result.Success == true)
+            {
+                var accountTypeDeleted = DbContext.AccountType.Where(x => x.AccountTypeId == accountType.Result.AccountType.AccountTypeId).FirstOrDefault();
+                accountTypeDeleted.DeletedAt = DateTime.UtcNow;
+                accountTypeDeleted.DeletedBy = parameters.DeletedBy;
+                await DbContext.SaveChangesAsync();
+                return new DeleteAccountTypeResult() { Success = true };
+            }
+            else
+                return new DeleteAccountTypeResult() { Success = false };
         }
         public async Task<CreateAccountTypeResult> QueryAccountType(CreateAccountTypeParameters parameters)
         {

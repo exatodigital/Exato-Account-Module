@@ -134,6 +134,12 @@ namespace ExatoDigital.OpenSource.AccountModule.Core
             var response = await repository.UpdateAccountType(parameters);
             return response;
         }
+        public async Task<DeleteAccountTypeResult> DeleteAccountType(DeleteAccountTypeParameters parameters)
+        {
+            var repository = _accountModuleRepositoryFactory.Create();
+            var response = await repository.DeleteAccountType(parameters);
+            return response;
+        }
         public async Task<CreateCurrencyResult> CreateCurrency(CreateCurrencyParameters parameters)
         {
             var repository = _accountModuleRepositoryFactory.Create();
@@ -165,8 +171,8 @@ namespace ExatoDigital.OpenSource.AccountModule.Core
         public async Task<BlockUserBalanceResult> BlockUserBalance(BlockUserBalanceParameters parameters)
         {
             var repository = _accountModuleRepositoryFactory.Create();
-            await repository.BlockUserBalance(parameters);
-            return new BlockUserBalanceResult();
+            var response = await repository.BlockUserBalance(parameters);
+            return response;
         }
 
         // AccountModulePrincipal : IPrincipal (https://learn.microsoft.com/en-us/dotnet/api/system.security.principal.iprincipal?view=net-6.0)

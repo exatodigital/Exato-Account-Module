@@ -23,6 +23,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Repositories
         public Task<CreateAccountTypeResult> CreateAccountType(CreateAccountTypeParameters parameters);
         public Task<RetrieveAccountTypeResult> RetrieveAccountType(RetrieveAccountTypeParameters parameters);
         public Task<UpdateAccountTypeResult> UpdateAccountType(UpdateAccountTypeParameters parameters);
+        public Task<DeleteAccountTypeResult> DeleteAccountType(DeleteAccountTypeParameters parameters);
         public Task<CreateCurrencyResult> CreateCurrency(CreateCurrencyParameters parameters);
         public Task<RetrieveCurrencyResult> RetrieveCurrency(RetrieveCurrencyParameters parameters);
         public Task<UpdateCurrencyResult> UpdateCurrency(UpdateCurrencyParameters parameters);
