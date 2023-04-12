@@ -233,9 +233,23 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
 
         public async Task<BlockUserBalanceResult> BlockUserBalance(BlockUserBalanceParameters parameters)
         {
-            return null;
-        }
+            var account = RetrieveAccount(parameters.AccountId, null);
+            if (account.Result.Success == true)
+            {
+                var newBalance = account.Result.Account.CurrentBalance - parameters.Amount;
+                var retrieveAccountTypeParameters = new RetrieveAccountTypeParameters(accountTypeId: account.Result.Account.AccountTypeId);
+                var retrieveAccountTypeResult = RetrieveAccountType(retrieveAccountTypeParameters);
+                if (!retrieveAccountTypeResult.Result.AccountType.NegativeBalanceAllowed && newBalance < 0)
+                    return new BlockUserBalanceResult() { Success = false, Error = true, ErrorMessage = "Saldo insuficiente" };
 
+                account.Result.Account.CurrentBalance = newBalance;
+                account.Result.Account.BalanceBlocked = parameters.Amount;
+                await _accountModuleDbContext.SaveChangesAsync();
+                return new BlockUserBalanceResult() { Success = true };
+            }
+            else
+                return new BlockUserBalanceResult() { Success = false };
+        }
         public static void Clear() {}
     }
 }

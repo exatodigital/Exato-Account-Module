@@ -26,6 +26,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Models
         public string? Metadata { get; set; }
         public string? Owner { get; set; }
         public decimal CurrentBalance { get; set; }
+        public decimal BalanceBlocked { get; set; }
         public DateTime CreatedAt { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
