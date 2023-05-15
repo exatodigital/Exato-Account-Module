@@ -250,6 +250,10 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
             else
                 return new BlockUserBalanceResult() { Success = false };
         }
+        public async Task<UnblockUserBalanceResult> UnblockUserBalance(UnblockUserBalanceParameters parameters)
+        {
+            return new UnblockUserBalanceResult();
+        }
         public static void Clear() {}
     }
 }

@@ -29,5 +29,6 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Repositories
         public Task<UpdateCurrencyResult> UpdateCurrency(UpdateCurrencyParameters parameters);
         public Task<DeleteCurrencyResult> DeleteCurrency(DeleteCurrencyParameters parameters);
         public Task<BlockUserBalanceResult> BlockUserBalance(BlockUserBalanceParameters parameters);
+        public Task<UnblockUserBalanceResult> UnblockUserBalance(UnblockUserBalanceParameters parameters);
     }
 }

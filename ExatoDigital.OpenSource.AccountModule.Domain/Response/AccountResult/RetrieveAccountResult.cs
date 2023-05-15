@@ -9,6 +9,6 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Response.AccountResult
 {
     public class RetrieveAccountResult : AccountModuleResult
     {
-        public Account? Account { get; set; }
+        public Account Account { get; set; }
     }
 }

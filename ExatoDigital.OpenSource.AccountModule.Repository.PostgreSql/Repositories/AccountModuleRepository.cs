@@ -241,7 +241,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
                 var retrieveAccountTypeParameters = new RetrieveAccountTypeParameters(accountTypeId: account.Result.Account.AccountTypeId);
                 var retrieveAccountTypeResult = RetrieveAccountType(retrieveAccountTypeParameters);
                 if (!retrieveAccountTypeResult.Result.AccountType.NegativeBalanceAllowed && newBalance < 0)
-                    return new BlockUserBalanceResult() { Success = false, Error = true, ErrorMessage = "Saldo insuficiente" };
+                    return new BlockUserBalanceResult() { Success = false, ErrorMessage = "Saldo insuficiente" };
 
                 account.Result.Account.CurrentBalance = newBalance;
                 account.Result.Account.BalanceBlocked = parameters.Amount;
@@ -250,6 +250,23 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
             }
             else
                 return new BlockUserBalanceResult() { Success = false };
+        }
+
+        public async Task<UnblockUserBalanceResult> UnblockUserBalance(UnblockUserBalanceParameters parameters)
+        {
+            var account = RetrieveAccount(parameters.AccountId, null);
+            if (account.Result.Success == true)
+            {
+                if(parameters.AmountToUnblock > account.Result.Account.BalanceBlocked)
+                    return new UnblockUserBalanceResult() { Success = false, ErrorMessage = "Valor a ser desbloqueado é maior que o valor bloqueado" };
+                var newBalance = account.Result.Account.CurrentBalance + parameters.AmountToUnblock;
+                account.Result.Account.BalanceBlocked = account.Result.Account.BalanceBlocked - parameters.AmountToUnblock;
+                account.Result.Account.CurrentBalance = newBalance;
+                await DbContext.SaveChangesAsync();
+                return new UnblockUserBalanceResult() { Success = true };
+            }
+            else 
+                return new UnblockUserBalanceResult() { Success = false };
         }
     }
 }
