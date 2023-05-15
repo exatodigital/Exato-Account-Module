@@ -25,7 +25,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Tests.UserBlockBalanceTests
             //Criando fachada
             var module = new AccountModuleFacade(repositoryFactory);
             // Chamando um método
-            var parameter = new BlockUserBalanceParameters();
+            var parameter = new BlockUserBalanceParameters(1, 10);
             var result = await module.BlockUserBalance(parameter);
 
             Assert.IsNull(result);

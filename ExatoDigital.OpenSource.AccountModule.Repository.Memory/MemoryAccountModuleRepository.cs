@@ -254,6 +254,10 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
         {
             return new UnblockUserBalanceResult();
         }
+        public async Task<QueryBalanceResult> QueryBalance(QueryBalanceParameters parameters)
+        {
+            return new QueryBalanceResult();
+        }
         public static void Clear() {}
     }
 }

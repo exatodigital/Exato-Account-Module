@@ -195,11 +195,11 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
         public async Task<RetrieveCurrencyResult> RetrieveCurrency(RetrieveCurrencyParameters parameters)
         {
             IQueryable<Currency> query = DbContext.Currency;
-            if(parameters.CurrencyId != null)
+            if (parameters.CurrencyId != null)
                 query = query.AsQueryable().Where(c => c.CurrencyId == parameters.CurrencyId);
-            if(parameters.CurrencyExternalUid != null)
+            if (parameters.CurrencyExternalUid != null)
                 query = query.AsQueryable().Where(c => c.CurrencyExternalUid == parameters.CurrencyExternalUid);
-            if(parameters.InternalName!= null)
+            if (parameters.InternalName != null)
                 query = query.AsQueryable().Where(c => c.InternalName == parameters.InternalName);
 
             var result = await query.AsNoTracking().FirstOrDefaultAsync();
@@ -257,7 +257,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
             var account = RetrieveAccount(parameters.AccountId, null);
             if (account.Result.Success == true)
             {
-                if(parameters.AmountToUnblock > account.Result.Account.BalanceBlocked)
+                if (parameters.AmountToUnblock > account.Result.Account.BalanceBlocked)
                     return new UnblockUserBalanceResult() { Success = false, ErrorMessage = "Valor a ser desbloqueado é maior que o valor bloqueado" };
                 var newBalance = account.Result.Account.CurrentBalance + parameters.AmountToUnblock;
                 account.Result.Account.BalanceBlocked = account.Result.Account.BalanceBlocked - parameters.AmountToUnblock;
@@ -265,8 +265,17 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
                 await DbContext.SaveChangesAsync();
                 return new UnblockUserBalanceResult() { Success = true };
             }
-            else 
+            else
                 return new UnblockUserBalanceResult() { Success = false };
+        }
+
+        public async Task<QueryBalanceResult> QueryBalance(QueryBalanceParameters parameters)
+        {
+            var account = RetrieveAccount(parameters.AccountId, null);
+            if (account.Result.Success == true)
+                return new QueryBalanceResult() { Success = true, Balance = account.Result.Account.CurrentBalance };
+            else
+                return new QueryBalanceResult() { Success = false };
         }
     }
 }
