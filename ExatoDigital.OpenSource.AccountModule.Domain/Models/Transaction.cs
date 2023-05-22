@@ -21,7 +21,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Models
         public string Metadata { get; set; }
         public int TransactionType { get; set; }
         public decimal Value { get; set; }
-        public Guid CurrentAccountUid { get; set; }
+        public Guid ReceiverAccountUid { get; set; }
         public Guid SourceAccountUid { get; set; }
         public decimal OldBalance { get; set; }
         public decimal NewBalance { get; set; }

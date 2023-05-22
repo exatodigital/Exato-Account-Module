@@ -268,7 +268,6 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
             else
                 return new UnblockUserBalanceResult() { Success = false };
         }
-
         public async Task<QueryBalanceResult> QueryBalance(QueryBalanceParameters parameters)
         {
             var account = RetrieveAccount(parameters.AccountId, null);
@@ -277,5 +276,63 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
             else
                 return new QueryBalanceResult() { Success = false };
         }
+        public async Task<JoinChildrenAccountsResult> JoinChildrensAccounts(JoinChildrenAccountsParameters parameters)
+        {
+            var accountOne = RetrieveAccount(parameters.AccountOneId, null);
+            var accountTwo = RetrieveAccount(parameters.AccountTwoId, null);
+            if (accountOne.Result.Success == true && accountTwo.Result.Success == true)
+            {
+                if (AreValidForJoin(accountOne.Result.Account, accountTwo.Result.Account))
+                {
+                    CreateTransaction(accountOne.Result.Account, accountTwo.Result.Account, accountTwo.Result.Account.CurrentBalance, null, null, null, null);
+                    accountOne.Result.Account.UpdatedAt = DateTime.UtcNow;
+                    accountOne.Result.Account.UpdatedBy = null;
+                    accountTwo.Result.Account.DeletedAt = DateTime.UtcNow;
+                    accountTwo.Result.Account.DeletedBy = null;
+                    await DbContext.SaveChangesAsync();
+                    return new JoinChildrenAccountsResult() { Success = true };
+                }
+                else
+                    return new JoinChildrenAccountsResult() { Success = false, ErrorMessage = "As contas não são válidas para serem unidas" };
+            }
+            else
+                return new JoinChildrenAccountsResult() { Success = false };
+        }
+
+        private static bool AreValidForJoin(Account accountOne, Account accountTwo)
+        {
+            if(accountOne.BalanceBlocked > 0 || accountTwo.BalanceBlocked > 0)
+                return false;
+            if (accountOne.AccountTypeId != accountTwo.AccountTypeId)
+                return false;
+            if (accountOne.CurrencyId != accountTwo.CurrencyId)
+                return false;
+            return true;
+        }
+
+        private void CreateTransaction(Account sourceAccount, Account receiverAccount,
+            decimal amount, string? internalName, string? longDisplayName, string? shortDisplayName, string? description)
+        {
+            var balanceSourceAccountAfterTransaction = sourceAccount.CurrentBalance - amount;
+            var balanceReceiverAccountAfterTransaction = receiverAccount.CurrentBalance + amount;
+            var transaction = new Transaction()
+            {
+                InternalName = internalName,
+                LongDisplayName = longDisplayName,
+                ShortDisplayName = shortDisplayName,
+                Description = description,
+                Value = amount,
+                ReceiverAccountUid = receiverAccount.AccountUid,
+                SourceAccountUid = sourceAccount.AccountUid,
+                OldBalance = sourceAccount.CurrentBalance,
+                NewBalance = balanceSourceAccountAfterTransaction,
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = 1,
+            };
+            sourceAccount.CurrentBalance = balanceSourceAccountAfterTransaction;
+            receiverAccount.CurrentBalance = balanceReceiverAccountAfterTransaction;
+            DbContext.SaveChangesAsync();
+        }
+
     }
 }

@@ -258,6 +258,11 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
         {
             return new QueryBalanceResult();
         }
+        public async Task<JoinChildrenAccountsResult> JoinChildrensAccounts(JoinChildrenAccountsParameters parameters)
+        {
+            return new JoinChildrenAccountsResult();
+        }
+
         public static void Clear() {}
     }
 }
