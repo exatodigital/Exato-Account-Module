@@ -197,6 +197,13 @@ namespace ExatoDigital.OpenSource.AccountModule.Core
             return response;
         }
 
+        public async Task<TransferBalanceResult> TransferBalance(TransferBalanceParameters parameters)
+        {
+            var repository = _accountModuleRepositoryFactory.Create();
+            var response = await repository.TransferBalance(parameters);
+            return response;
+        }
+
         // AccountModulePrincipal : IPrincipal (https://learn.microsoft.com/en-us/dotnet/api/system.security.principal.iprincipal?view=net-6.0)
         // Thread.CurrentPrincipal (https://learn.microsoft.com/pt-br/dotnet/api/system.threading.thread.currentprincipal?view=net-6.0)
 

@@ -92,7 +92,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
                 return new DeleteAccountResult() { Success = true };
             }
             else
-                return new DeleteAccountResult() { Success = false };
+                return new DeleteAccountResult() { Success = false, ErrorMessage = "Falha ao deletar conta." };
         }
         public async Task<CreateAccountResult> QueryAccount(CreateAccountParameters parameters)
         {
@@ -136,7 +136,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
             if (result != null)
                 return new RetrieveAccountTypeResult() { AccountType = result, Success = true };
             else
-                return new RetrieveAccountTypeResult() { AccountType = null, Success = false };
+                return new RetrieveAccountTypeResult() { Success = false, ErrorMessage = "Falha ao encontrar AccountType." };
         }
         public async Task<UpdateAccountTypeResult> UpdateAccountType(UpdateAccountTypeParameters parameters)
         {
@@ -157,7 +157,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
                 return new DeleteAccountTypeResult() { Success = true };
             }
             else
-                return new DeleteAccountTypeResult() { Success = false };
+                return new DeleteAccountTypeResult() { Success = false, ErrorMessage = "Falha ao deletar AccountType." };
         }
         public async Task<CreateAccountTypeResult> QueryAccountType(CreateAccountTypeParameters parameters)
         {
@@ -225,7 +225,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
                 return new DeleteCurrencyResult() { Success = true };
             }
             else
-                return new DeleteCurrencyResult() { Success = false };
+                return new DeleteCurrencyResult() { Success = false, ErrorMessage = "Erro ao criar Currency." };
         }
         public async Task<CreateCurrencyResult> QueryCurrency(CreateCurrencyParameters parameters)
         {
@@ -249,13 +249,13 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
                 return new BlockUserBalanceResult() { Success = true };
             }
             else
-                return new BlockUserBalanceResult() { Success = false };
+                return new BlockUserBalanceResult() { Success = false, ErrorMessage = "Falha ao bloquear saldo do usuário." };
         }
 
         public async Task<UnblockUserBalanceResult> UnblockUserBalance(UnblockUserBalanceParameters parameters)
         {
             var account = RetrieveAccount(parameters.AccountId, null);
-            if (account.Result.Success == true)
+            if (account.Result.Success)
             {
                 if (parameters.AmountToUnblock > account.Result.Account.BalanceBlocked)
                     return new UnblockUserBalanceResult() { Success = false, ErrorMessage = "Valor a ser desbloqueado é maior que o valor bloqueado" };
@@ -271,24 +271,22 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
         public async Task<QueryBalanceResult> QueryBalance(QueryBalanceParameters parameters)
         {
             var account = RetrieveAccount(parameters.AccountId, null);
-            if (account.Result.Success == true)
+            if (account.Result.Success)
                 return new QueryBalanceResult() { Success = true, Balance = account.Result.Account.CurrentBalance };
             else
-                return new QueryBalanceResult() { Success = false };
+                return new QueryBalanceResult() { Success = false, ErrorMessage = "Falha ao buscar saldo do usuário." };
         }
         public async Task<JoinChildrenAccountsResult> JoinChildrensAccounts(JoinChildrenAccountsParameters parameters)
         {
             var accountOne = RetrieveAccount(parameters.AccountOneId, null);
             var accountTwo = RetrieveAccount(parameters.AccountTwoId, null);
-            if (accountOne.Result.Success == true && accountTwo.Result.Success == true)
+            if (accountOne.Result.Success && accountTwo.Result.Success)
             {
                 if (AreValidForJoin(accountOne.Result.Account, accountTwo.Result.Account))
                 {
                     CreateTransaction(accountOne.Result.Account, accountTwo.Result.Account, accountTwo.Result.Account.CurrentBalance, null, null, null, null);
                     accountOne.Result.Account.UpdatedAt = DateTime.UtcNow;
-                    accountOne.Result.Account.UpdatedBy = null;
                     accountTwo.Result.Account.DeletedAt = DateTime.UtcNow;
-                    accountTwo.Result.Account.DeletedBy = null;
                     await DbContext.SaveChangesAsync();
                     return new JoinChildrenAccountsResult() { Success = true };
                 }
@@ -296,7 +294,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
                     return new JoinChildrenAccountsResult() { Success = false, ErrorMessage = "As contas não são válidas para serem unidas" };
             }
             else
-                return new JoinChildrenAccountsResult() { Success = false };
+                return new JoinChildrenAccountsResult() { Success = false, ErrorMessage = "Erro ao juntar contas" };
         }
 
         private static bool AreValidForJoin(Account accountOne, Account accountTwo)
@@ -307,6 +305,8 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
                 return false;
             if (accountOne.CurrencyId != accountTwo.CurrencyId)
                 return false;
+            if (accountOne.MasterAccountUid != accountTwo.MasterAccountUid)
+                return false;
             return true;
         }
 
@@ -315,6 +315,8 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
         {
             var balanceSourceAccountAfterTransaction = sourceAccount.CurrentBalance - amount;
             var balanceReceiverAccountAfterTransaction = receiverAccount.CurrentBalance + amount;
+            sourceAccount.CurrentBalance = balanceSourceAccountAfterTransaction;
+            receiverAccount.CurrentBalance = balanceReceiverAccountAfterTransaction;
             var transaction = new Transaction()
             {
                 InternalName = internalName,
@@ -329,9 +331,12 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
                 CreatedAt = DateTime.UtcNow,
                 CreatedBy = 1,
             };
-            sourceAccount.CurrentBalance = balanceSourceAccountAfterTransaction;
-            receiverAccount.CurrentBalance = balanceReceiverAccountAfterTransaction;
-            DbContext.SaveChangesAsync();
+            DbContext.SaveChanges();
+        }
+
+        public async Task<TransferBalanceResult> TransferBalance(TransferBalanceParameters parameters)
+        {
+            return null;
         }
 
     }

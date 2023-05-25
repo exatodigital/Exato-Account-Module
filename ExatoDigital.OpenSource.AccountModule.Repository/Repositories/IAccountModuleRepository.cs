@@ -32,6 +32,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Repositories
         public Task<UnblockUserBalanceResult> UnblockUserBalance(UnblockUserBalanceParameters parameters);
         public Task<QueryBalanceResult> QueryBalance(QueryBalanceParameters parameters);
         public Task<JoinChildrenAccountsResult> JoinChildrensAccounts(JoinChildrenAccountsParameters parameters);
+        public Task<TransferBalanceResult> TransferBalance(TransferBalanceParameters parameters);
 
     }
 }
