@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,9 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Models
     {
         public int AccountId { get; set; }
         public int AccountTypeId { get; set; }
+        public AccountType AccountType { get; set; }
         public int CurrencyId { get; set; }
+        public Currency Currency { get; set; }
         public Guid AccountUid { get; set; }
         public Guid AccountExternalUid { get; set; }
         public int? AccountClientId { get; set; }
@@ -33,8 +36,6 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Models
         public int? UpdatedBy { get; set; }
         public DateTime? DeletedAt { get; set; }
         public int? DeletedBy { get; set; }
-        public virtual AccountType? AccountType { get; set; }
-        public virtual Currency? Currency { get; set; }
         public ICollection<Transaction>? Transactions { get; set; }
     }
 }

@@ -7,6 +7,7 @@ using ExatoDigital.OpenSource.AccountModule.Domain.Response.AccountResult;
 using ExatoDigital.OpenSource.AccountModule.Domain.Response.AccountTypeResult;
 using ExatoDigital.OpenSource.AccountModule.Domain.Response.CurrencyResult;
 using ExatoDigital.OpenSource.AccountModule.Domain.Response.UserBalanceResult;
+using ExatoDigital.OpenSource.AccountModule.Domain.Enums;
 using ExatoDigital.OpenSource.AccountModule.Repository.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -284,8 +285,14 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
             {
                 if (AreValidForJoin(accountOne.Result.Account, accountTwo.Result.Account))
                 {
-                    CreateTransaction(accountOne.Result.Account, accountTwo.Result.Account, accountTwo.Result.Account.CurrentBalance, null, null, null, null);
+                    decimal accountOneBalance = accountOne.Result.Account.CurrentBalance;
+                    decimal accountTwoBalance = accountTwo.Result.Account.CurrentBalance;
+                    decimal accountOneNewBalance = accountOneBalance + accountTwoBalance;
+                    CreateTransaction(accountOne.Result.Account.AccountId, accountOne.Result.Account.AccountExternalUid, accountTwo.Result.Account.AccountExternalUid,accountTwoBalance, TransactionType.Withdraw, accountOneBalance, accountOneNewBalance, null, null, null, null);
+                    CreateTransaction(accountTwo.Result.Account.AccountId, accountOne.Result.Account.AccountExternalUid, accountTwo.Result.Account.AccountExternalUid,accountTwoBalance, TransactionType.Deposit, accountOneBalance, accountOneNewBalance, null, null, null, null);
+                    accountOne.Result.Account.CurrentBalance = accountOneNewBalance;
                     accountOne.Result.Account.UpdatedAt = DateTime.UtcNow;
+                    accountTwo.Result.Account.CurrentBalance = 0;
                     accountTwo.Result.Account.DeletedAt = DateTime.UtcNow;
                     await DbContext.SaveChangesAsync();
                     return new JoinChildrenAccountsResult() { Success = true };
@@ -297,9 +304,28 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
                 return new JoinChildrenAccountsResult() { Success = false, ErrorMessage = "Erro ao juntar contas" };
         }
 
+        public async Task<TransferBalanceResult> TransferBalance(TransferBalanceParameters parameters)
+        {
+            var senderAccount = RetrieveAccount(parameters.SenderAccountId, null);
+            var receiverAccount = RetrieveAccount(parameters.ReceiverAccountId, null);
+            if (ValidateIfTransactionIsPossible(senderAccount.Result.Account, senderAccount.Result.Account, parameters.Amount))
+            {
+                var receiverOldBalance = receiverAccount.Result.Account.CurrentBalance;
+                var receiverNewBalance = receiverOldBalance + parameters.Amount;
+                CreateTransaction(senderAccount.Result.Account.AccountId, senderAccount.Result.Account.AccountExternalUid, receiverAccount.Result.Account.AccountExternalUid, parameters.Amount, TransactionType.Withdraw, receiverOldBalance, receiverNewBalance, null, null, null, null);
+                CreateTransaction(receiverAccount.Result.Account.AccountId, senderAccount.Result.Account.AccountExternalUid, receiverAccount.Result.Account.AccountExternalUid, parameters.Amount, TransactionType.Deposit, receiverOldBalance, receiverNewBalance, null, null, null, null);
+                receiverAccount.Result.Account.CurrentBalance += receiverNewBalance;
+                senderAccount.Result.Account.CurrentBalance -= parameters.Amount;
+                return new TransferBalanceResult() { Success = true };
+            }
+            else
+                return new TransferBalanceResult() { Success = false, ErrorMessage = "Erro ao transferir saldo" };
+
+        }
+
         private static bool AreValidForJoin(Account accountOne, Account accountTwo)
         {
-            if(accountOne.BalanceBlocked > 0 || accountTwo.BalanceBlocked > 0)
+            if (accountOne.BalanceBlocked > 0 || accountTwo.BalanceBlocked > 0)
                 return false;
             if (accountOne.AccountTypeId != accountTwo.AccountTypeId)
                 return false;
@@ -310,33 +336,37 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
             return true;
         }
 
-        private void CreateTransaction(Account sourceAccount, Account receiverAccount,
-            decimal amount, string? internalName, string? longDisplayName, string? shortDisplayName, string? description)
+        private async void CreateTransaction(int accountId, Guid sourceAccountUid, Guid receiverAccountUid,
+            decimal amount, TransactionType transactionType, decimal receiverOldBalance, decimal receiverNewBalance, string? internalName, string? longDisplayName, string? shortDisplayName, string? description)
         {
-            var balanceSourceAccountAfterTransaction = sourceAccount.CurrentBalance - amount;
-            var balanceReceiverAccountAfterTransaction = receiverAccount.CurrentBalance + amount;
-            sourceAccount.CurrentBalance = balanceSourceAccountAfterTransaction;
-            receiverAccount.CurrentBalance = balanceReceiverAccountAfterTransaction;
             var transaction = new Transaction()
             {
+                AccountId = accountId,
                 InternalName = internalName,
                 LongDisplayName = longDisplayName,
                 ShortDisplayName = shortDisplayName,
                 Description = description,
                 Value = amount,
-                ReceiverAccountUid = receiverAccount.AccountUid,
-                SourceAccountUid = sourceAccount.AccountUid,
-                OldBalance = sourceAccount.CurrentBalance,
-                NewBalance = balanceSourceAccountAfterTransaction,
+                TransactionType = transactionType,
+                ReceiverAccountUid = receiverAccountUid,
+                SourceAccountUid = sourceAccountUid,
+                ReceiverOldBalance = receiverOldBalance,
+                ReceiverNewBalance = receiverNewBalance,
                 CreatedAt = DateTime.UtcNow,
                 CreatedBy = 1,
             };
-            DbContext.SaveChanges();
+            await DbContext.SaveChangesAsync();
         }
 
-        public async Task<TransferBalanceResult> TransferBalance(TransferBalanceParameters parameters)
+        private static bool ValidateIfTransactionIsPossible(Account sourceAccount, Account receiverAccount, decimal amount)
         {
-            return null;
+            if (sourceAccount.AccountTypeId != receiverAccount.AccountTypeId)
+                return false;
+            if (sourceAccount.CurrencyId != receiverAccount.CurrencyId)
+                return false;
+            if (sourceAccount.CurrentBalance < amount && !sourceAccount.AccountType.NegativeBalanceAllowed)
+                return false;
+            return true;
         }
 
     }

@@ -8,14 +8,14 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Parameters.UserBalancePar
 {
     public class TransferBalanceParameters : AccountModuleParameters
     {
-        public TransferBalanceParameters(int accountOneId, int accountTwoId, decimal amount)
+        public TransferBalanceParameters(int senderAccountId, int receiverAccountId, decimal amount)
         {
-            AccountOneId = accountOneId;
-            AccountTwoId = accountTwoId;
+            SenderAccountId = senderAccountId;
+            ReceiverAccountId = receiverAccountId;
             Amount = amount;
         }
-        public int AccountOneId { get; set; }
-        public int AccountTwoId { get; set; }
+        public int SenderAccountId { get; set; }
+        public int ReceiverAccountId { get; set; }
         public decimal Amount { get; set; }
     }
 }

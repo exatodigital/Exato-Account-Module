@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ExatoDigital.OpenSource.AccountModule.Domain.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Response.UserBalanceResul
 {
     public class TransferBalanceResult : AccountModuleResult
     {
+        public Account? receiverAccount;
+        public Account? senderAccount;
     }
 }

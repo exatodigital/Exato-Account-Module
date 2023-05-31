@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -30,5 +31,6 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Models
         public DateTime DeletedAt { get; set; }
         public int? DeletedBy { get; set; }
         public virtual RealCurrency? RealCurrency { get; set; }
+        public ICollection<Account> Accounts{ get; set; }
     }
 }

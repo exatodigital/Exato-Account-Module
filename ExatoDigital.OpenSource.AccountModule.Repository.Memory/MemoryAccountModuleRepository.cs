@@ -16,6 +16,7 @@ using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.UserBalanceParamet
 using ExatoDigital.OpenSource.AccountModule.Domain.Response.AccountTypeResult;
 using ExatoDigital.OpenSource.AccountModule.Domain.Response.AccountResult;
 using ExatoDigital.OpenSource.AccountModule.Domain.Response.UserBalanceResult;
+using ExatoDigital.OpenSource.AccountModule.Domain.Enums;
 
 namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
 {
@@ -27,10 +28,12 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
         
         public async Task<CreateAccountResult> CreateAccount(CreateAccountParameters parameters)
         {
+            var retrieveAccountTypeParameters = new RetrieveAccountTypeParameters(parameters.AccountTypeId);
+            var retrieveAccountType = await RetrieveAccountType(retrieveAccountTypeParameters);
+            var retrieveCurrencyParameters = new RetrieveCurrencyParameters(parameters.CurrencyId);
+            var retrieveCurrency = await RetrieveCurrency(retrieveCurrencyParameters);
             Account account = new Account()
             {
-                AccountTypeId = parameters.AccountTypeId,
-                CurrencyId = parameters.CurrencyId,
                 AccountUid = Guid.NewGuid(),
                 AccountExternalUid = Guid.NewGuid(),
                 AccountClientId = null,
@@ -48,9 +51,14 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
                 UpdatedAt = null,
                 UpdatedBy = null,
                 DeletedAt = null,
-                DeletedBy = null
+                DeletedBy = null,
+                //AccountTypeId = retrieveAccountType.AccountType.AccountTypeId,
+                //CurrencyId = retrieveCurrency.Currency.CurrencyId,
+                AccountType = retrieveAccountType.AccountType,
+                Currency = retrieveCurrency.Currency
             };
             _accountModuleDbContext.Account.Add(account);
+            var teste = _accountModuleDbContext.Account.Select(row => row);
             await _accountModuleDbContext.SaveChangesAsync();
             return new CreateAccountResult() { Success = true, Account = account };
         }
@@ -59,11 +67,11 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
         {
             IQueryable<Account> query = _accountModuleDbContext.Account;
             if (accountId != null)
-                query = query.AsQueryable().Where(c => c.AccountId == accountId);
+                query = query.AsQueryable().Where(c => c.AccountId == accountId).Include(at => at.AccountType).Include(c => c.Currency);
             if (accountExternalUid != null)
-                query = query.AsQueryable().Where(c => c.AccountExternalUid == accountExternalUid);
+                query = query.AsQueryable().Where(c => c.AccountExternalUid == accountExternalUid).Include(at => at.AccountType).Include(c => c.Currency);
 
-            var result = await query.AsNoTracking().FirstOrDefaultAsync();
+            var result = await query.FirstOrDefaultAsync();
             if (result != null)
                 return new RetrieveAccountResult() { Account = result, Success = true };
             else
@@ -133,7 +141,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
             if (parameters.Name != null)
                 query = query.AsQueryable().Where(c => c.Name == parameters.Name);
 
-            var result = await query.AsNoTracking().FirstOrDefaultAsync();
+            var result = await query.FirstOrDefaultAsync();
             if (result != null) 
                 return new RetrieveAccountTypeResult() { AccountType = result, Success = true };
             else
@@ -201,7 +209,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
             if (parameters.InternalName != null)
                 query = query.AsQueryable().Where(c => c.InternalName == parameters.InternalName);
 
-            var result = await query.AsNoTracking().FirstOrDefaultAsync();
+            var result = await query.FirstOrDefaultAsync();
             if (result != null)
                 return new RetrieveCurrencyResult() { Currency = result, Success = true };
             else
@@ -265,7 +273,53 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
 
         public async Task<TransferBalanceResult> TransferBalance(TransferBalanceParameters parameters)
         {
-            return new TransferBalanceResult();
+            var senderAccount = RetrieveAccount(parameters.SenderAccountId, null);
+            var receiverAccount = RetrieveAccount(parameters.ReceiverAccountId, null);
+            if (ValidateIfTransactionIsPossible(senderAccount.Result.Account, senderAccount.Result.Account, parameters.Amount))
+            {
+                var receiverOldBalance = receiverAccount.Result.Account.CurrentBalance;
+                var receiverNewBalance = receiverOldBalance + parameters.Amount;
+                CreateTransaction(senderAccount.Result.Account.AccountId, senderAccount.Result.Account.AccountExternalUid, receiverAccount.Result.Account.AccountExternalUid, parameters.Amount, TransactionType.Withdraw, receiverOldBalance, receiverNewBalance, null, null, null, null);
+                CreateTransaction(receiverAccount.Result.Account.AccountId, senderAccount.Result.Account.AccountExternalUid, receiverAccount.Result.Account.AccountExternalUid, parameters.Amount, TransactionType.Deposit, receiverOldBalance, receiverNewBalance, null, null, null, null);
+                receiverAccount.Result.Account.CurrentBalance = receiverNewBalance;
+                senderAccount.Result.Account.CurrentBalance -= parameters.Amount;
+                return new TransferBalanceResult() { Success = true, receiverAccount = receiverAccount.Result.Account, senderAccount = senderAccount.Result.Account };
+            }
+            else
+                return new TransferBalanceResult() { Success = false, ErrorMessage = "Erro ao transferir saldo" };
+        }
+
+        private async void CreateTransaction(int accountId, Guid sourceAccountUid, Guid receiverAccountUid,
+            decimal amount, TransactionType transactionType, decimal receiverOldBalance, decimal receiverNewBalance, string? internalName, string? longDisplayName, string? shortDisplayName, string? description)
+        {
+            var transaction = new Transaction()
+            {
+                AccountId = accountId,
+                InternalName = internalName,
+                LongDisplayName = longDisplayName,
+                ShortDisplayName = shortDisplayName,
+                Description = description,
+                Value = amount,
+                TransactionType = transactionType,
+                ReceiverAccountUid = receiverAccountUid,
+                SourceAccountUid = sourceAccountUid,
+                ReceiverOldBalance = receiverOldBalance,
+                ReceiverNewBalance = receiverNewBalance,
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = 1,
+            };
+            await _accountModuleDbContext.SaveChangesAsync();
+        }
+
+        private static bool ValidateIfTransactionIsPossible(Account sourceAccount, Account receiverAccount, decimal amount)
+        {
+            if (sourceAccount.AccountTypeId != receiverAccount.AccountTypeId)
+                return false;
+            if (sourceAccount.CurrencyId != receiverAccount.CurrencyId)
+                return false;
+            if (sourceAccount.CurrentBalance < amount && !sourceAccount.AccountType.NegativeBalanceAllowed)
+                return false;
+            return true;
         }
 
         public static void Clear() {}
