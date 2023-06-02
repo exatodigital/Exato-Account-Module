@@ -228,9 +228,9 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
             else
                 return new DeleteCurrencyResult() { Success = false, ErrorMessage = "Erro ao criar Currency." };
         }
-        public async Task<CreateCurrencyResult> QueryCurrency(CreateCurrencyParameters parameters)
+        public async Task<QueryCurrencyResult> QueryCurrency(QueryCurrencyParameters parameters)
         {
-            return new CreateCurrencyResult();
+            return new QueryCurrencyResult();
         }
 
         public async Task<BlockUserBalanceResult> BlockUserBalance(BlockUserBalanceParameters parameters)
@@ -314,9 +314,10 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
                 var receiverNewBalance = receiverOldBalance + parameters.Amount;
                 CreateTransaction(senderAccount.Result.Account.AccountId, senderAccount.Result.Account.AccountExternalUid, receiverAccount.Result.Account.AccountExternalUid, parameters.Amount, TransactionType.Withdraw, receiverOldBalance, receiverNewBalance, null, null, null, null);
                 CreateTransaction(receiverAccount.Result.Account.AccountId, senderAccount.Result.Account.AccountExternalUid, receiverAccount.Result.Account.AccountExternalUid, parameters.Amount, TransactionType.Deposit, receiverOldBalance, receiverNewBalance, null, null, null, null);
-                receiverAccount.Result.Account.CurrentBalance += receiverNewBalance;
+                receiverAccount.Result.Account.CurrentBalance = receiverNewBalance;
                 senderAccount.Result.Account.CurrentBalance -= parameters.Amount;
-                return new TransferBalanceResult() { Success = true };
+                await DbContext.SaveChangesAsync();
+                return new TransferBalanceResult() { Success = true, receiverAccount = receiverAccount.Result.Account, senderAccount = senderAccount.Result.Account };
             }
             else
                 return new TransferBalanceResult() { Success = false, ErrorMessage = "Erro ao transferir saldo" };

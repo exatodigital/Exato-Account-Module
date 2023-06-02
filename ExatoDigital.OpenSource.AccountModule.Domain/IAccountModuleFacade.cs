@@ -25,6 +25,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain
         public Task<RetrieveCurrencyResult> RetrieveCurrency(RetrieveCurrencyParameters parameters);
         public Task<UpdateCurrencyResult> UpdateCurrency(UpdateCurrencyParameters parameters);
         public Task<DeleteCurrencyResult> DeleteCurrency(DeleteCurrencyParameters parameters);
+        public Task<QueryCurrencyResult> QueryCurrency(QueryCurrencyParameters parameters);
         public Task<BlockUserBalanceResult> BlockUserBalance(BlockUserBalanceParameters parameters);
         public Task<UnblockUserBalanceResult> UnblockUserBalance(UnblockUserBalanceParameters parameters);
         public Task<QueryBalanceResult> QueryBalance(QueryBalanceParameters parameters);

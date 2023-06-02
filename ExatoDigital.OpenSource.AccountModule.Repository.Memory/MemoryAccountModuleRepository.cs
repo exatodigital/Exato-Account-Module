@@ -239,6 +239,11 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
                 return new DeleteCurrencyResult() { Success = false };
         }
 
+        public async Task<QueryCurrencyResult> QueryCurrency(QueryCurrencyParameters parameters)
+        {
+            return new QueryCurrencyResult();
+        }
+
         public async Task<BlockUserBalanceResult> BlockUserBalance(BlockUserBalanceParameters parameters)
         {
             var account = RetrieveAccount(parameters.AccountId, null);
@@ -268,11 +273,34 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
         }
         public async Task<JoinChildrenAccountsResult> JoinChildrensAccounts(JoinChildrenAccountsParameters parameters)
         {
-            return new JoinChildrenAccountsResult();
+            var accountOne = RetrieveAccount(parameters.AccountOneId, null);
+            var accountTwo = RetrieveAccount(parameters.AccountTwoId, null);
+            if (accountOne.Result.Success && accountTwo.Result.Success)
+            {
+                if (AreValidForJoin(accountOne.Result.Account, accountTwo.Result.Account))
+                {
+                    decimal accountOneBalance = accountOne.Result.Account.CurrentBalance;
+                    decimal accountTwoBalance = accountTwo.Result.Account.CurrentBalance;
+                    decimal accountOneNewBalance = accountOneBalance + accountTwoBalance;
+                    CreateTransaction(accountOne.Result.Account.AccountId, accountOne.Result.Account.AccountExternalUid, accountTwo.Result.Account.AccountExternalUid, accountTwoBalance, TransactionType.Withdraw, accountOneBalance, accountOneNewBalance, null, null, null, null);
+                    CreateTransaction(accountTwo.Result.Account.AccountId, accountOne.Result.Account.AccountExternalUid, accountTwo.Result.Account.AccountExternalUid, accountTwoBalance, TransactionType.Deposit, accountOneBalance, accountOneNewBalance, null, null, null, null);
+                    accountOne.Result.Account.CurrentBalance = accountOneNewBalance;
+                    accountOne.Result.Account.UpdatedAt = DateTime.UtcNow;
+                    accountTwo.Result.Account.CurrentBalance = 0;
+                    accountTwo.Result.Account.DeletedAt = DateTime.UtcNow;
+                    await _accountModuleDbContext.SaveChangesAsync();
+                    return new JoinChildrenAccountsResult() { Success = true };
+                }
+                else
+                    return new JoinChildrenAccountsResult() { Success = false, ErrorMessage = "As contas não são válidas para serem unidas" };
+            }
+            else
+                return new JoinChildrenAccountsResult() { Success = false, ErrorMessage = "Erro ao juntar contas" };
         }
 
         public async Task<TransferBalanceResult> TransferBalance(TransferBalanceParameters parameters)
         {
+            // Acho que dá pra refatorar esse método em pequenas funções ( Tipo Crédit(), Debit() )
             var senderAccount = RetrieveAccount(parameters.SenderAccountId, null);
             var receiverAccount = RetrieveAccount(parameters.ReceiverAccountId, null);
             if (ValidateIfTransactionIsPossible(senderAccount.Result.Account, senderAccount.Result.Account, parameters.Amount))
@@ -283,6 +311,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
                 CreateTransaction(receiverAccount.Result.Account.AccountId, senderAccount.Result.Account.AccountExternalUid, receiverAccount.Result.Account.AccountExternalUid, parameters.Amount, TransactionType.Deposit, receiverOldBalance, receiverNewBalance, null, null, null, null);
                 receiverAccount.Result.Account.CurrentBalance = receiverNewBalance;
                 senderAccount.Result.Account.CurrentBalance -= parameters.Amount;
+                await _accountModuleDbContext.SaveChangesAsync();
                 return new TransferBalanceResult() { Success = true, receiverAccount = receiverAccount.Result.Account, senderAccount = senderAccount.Result.Account };
             }
             else
@@ -318,6 +347,19 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
             if (sourceAccount.CurrencyId != receiverAccount.CurrencyId)
                 return false;
             if (sourceAccount.CurrentBalance < amount && !sourceAccount.AccountType.NegativeBalanceAllowed)
+                return false;
+            return true;
+        }
+
+        private static bool AreValidForJoin(Account accountOne, Account accountTwo)
+        {
+            if (accountOne.BalanceBlocked > 0 || accountTwo.BalanceBlocked > 0)
+                return false;
+            if (accountOne.AccountTypeId != accountTwo.AccountTypeId)
+                return false;
+            if (accountOne.CurrencyId != accountTwo.CurrencyId)
+                return false;
+            if (accountOne.MasterAccountUid != accountTwo.MasterAccountUid)
                 return false;
             return true;
         }
