@@ -15,12 +15,11 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
 {
     public sealed class AccountModuleRepository : IAccountModuleRepository
     {
-        private readonly AccountModuleDbContext _dbContext;
         public AccountModuleRepository(AccountModuleDbContext dbContext)
         {
-            _dbContext = dbContext;
+            DbContext = dbContext;
         }
-        public AccountModuleDbContext DbContext => _dbContext;
+        public AccountModuleDbContext DbContext { get; }
 
         public async Task<CreateAccountResult> CreateAccount(CreateAccountParameters parameters)
         {
@@ -83,12 +82,15 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
         }
         public async Task<DeleteAccountResult> DeleteAccount(DeleteAccountParameters parameters)
         {
-            var account = RetrieveAccount(parameters.AccountId, parameters.AccountExternalUid);
-            if (account.Result.Success == true)
+            var account = await RetrieveAccount(parameters.AccountId, parameters.AccountExternalUid);
+            if (account.Success)
             {
-                var accountDeleted = DbContext.Account.Where(x => x.AccountId == account.Result.Account.AccountId).FirstOrDefault();
-                accountDeleted.DeletedAt = DateTime.UtcNow;
-                accountDeleted.DeletedBy = parameters.DeletedBy;
+                var accountDeleted = DbContext.Account.FirstOrDefault(x => x.AccountId == account.Account.AccountId);
+                if (accountDeleted != null)
+                {
+                    accountDeleted.DeletedAt = DateTime.UtcNow;
+                    accountDeleted.DeletedBy = parameters.DeletedBy;
+                }
                 await DbContext.SaveChangesAsync();
                 return new DeleteAccountResult() { Success = true };
             }
@@ -148,12 +150,16 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
         public async Task<DeleteAccountTypeResult> DeleteAccountType(DeleteAccountTypeParameters parameters)
         {
             var accountTypeParameters = new RetrieveAccountTypeParameters(accountTypeId: parameters.AccountTypeId);
-            var accountType = RetrieveAccountType(accountTypeParameters);
-            if (accountType.Result.Success == true)
+            var accountType = await RetrieveAccountType(accountTypeParameters);
+            if (accountType.Success)
             {
-                var accountTypeDeleted = DbContext.AccountType.Where(x => x.AccountTypeId == accountType.Result.AccountType.AccountTypeId).FirstOrDefault();
-                accountTypeDeleted.DeletedAt = DateTime.UtcNow;
-                accountTypeDeleted.DeletedBy = parameters.DeletedBy;
+                var accountTypeDeleted = DbContext.AccountType.FirstOrDefault(x => accountType.AccountType != null && x.AccountTypeId == accountType.AccountType.AccountTypeId);
+                if (accountTypeDeleted != null)
+                {
+                    accountTypeDeleted.DeletedAt = DateTime.UtcNow;
+                    accountTypeDeleted.DeletedBy = parameters.DeletedBy;
+                }
+
                 await DbContext.SaveChangesAsync();
                 return new DeleteAccountTypeResult() { Success = true };
             }
@@ -166,27 +172,13 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
         }
         public async Task<CreateCurrencyResult> CreateCurrency(CreateCurrencyParameters parameters)
         {
-            var currency = new Currency
-            {
-                CurrencyUid = default,
-                CurrencyExternalUid = default,
-                CurrencyClientId = default,
-                InternalName = parameters.InternalName,
-                LongDisplayName = parameters.LongDisplayName,
-                ShortDisplayName = parameters.ShortDisplayName,
-                Description = parameters.Description,
-                AdditionalMetadata = default,
-                DecimalPrecision = parameters.DecimalPrecision,
-                MinValue = parameters.MinValue,
-                MaxValue = parameters.MaxValue,
-                Symbol = parameters.Symbol,
-                CreatedAt = default,
-                CreatedBy = default,
-                UpdatedAt = default,
-                UpdatedBy = default,
-                DeletedAt = default,
-                DeletedBy = default
-            };
+            var currency = new Currency(currencyUid: default, currencyExternalUid: default, currencyClientId: default,
+                internalName: parameters.InternalName, longDisplayName: parameters.LongDisplayName,
+                shortDisplayName: parameters.ShortDisplayName, description: parameters.Description,
+                additionalMetadata: default, decimalPrecision: parameters.DecimalPrecision,
+                minValue: parameters.MinValue, maxValue: parameters.MaxValue, symbol: parameters.Symbol,
+                createdAt: default, createdBy: default, updatedAt: default, updatedBy: default, deletedAt: default,
+                deletedBy: default);
 
             DbContext.Currency.Add(currency);
             await DbContext.SaveChangesAsync();
@@ -217,12 +209,14 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
         {
             var retrieveCurrencyParameters = new RetrieveCurrencyParameters(currencyId: parameters.CurrencyId);
             var currency = RetrieveCurrency(retrieveCurrencyParameters);
-            if (currency.Result.Success == true)
+            if (currency.Result.Success)
             {
+                if (currency.Result.Currency == null) return new DeleteCurrencyResult() { Success = true };
                 currency.Result.Currency.DeletedAt = DateTime.UtcNow;
                 currency.Result.Currency.DeletedBy = parameters.DeletedBy;
                 var updateCurrencyParameters = new UpdateCurrencyParameters(currency.Result.Currency);
                 await UpdateCurrency(updateCurrencyParameters);
+
                 return new DeleteCurrencyResult() { Success = true };
             }
             else
@@ -236,12 +230,12 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
         public async Task<BlockUserBalanceResult> BlockUserBalance(BlockUserBalanceParameters parameters)
         {
             var account = RetrieveAccount(parameters.AccountId, null);
-            if (account.Result.Success == true)
+            if (account.Result.Success)
             {
                 var newBalance = account.Result.Account.CurrentBalance - parameters.Amount;
                 var retrieveAccountTypeParameters = new RetrieveAccountTypeParameters(accountTypeId: account.Result.Account.AccountTypeId);
                 var retrieveAccountTypeResult = RetrieveAccountType(retrieveAccountTypeParameters);
-                if (!retrieveAccountTypeResult.Result.AccountType.NegativeBalanceAllowed && newBalance < 0)
+                if (retrieveAccountTypeResult.Result.AccountType is { NegativeBalanceAllowed: false } && newBalance < 0)
                     return new BlockUserBalanceResult() { Success = false, ErrorMessage = "Saldo insuficiente" };
 
                 account.Result.Account.CurrentBalance = newBalance;
@@ -271,9 +265,9 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
         }
         public async Task<QueryBalanceResult> QueryBalance(QueryBalanceParameters parameters)
         {
-            var account = RetrieveAccount(parameters.AccountId, null);
-            if (account.Result.Success)
-                return new QueryBalanceResult() { Success = true, Balance = account.Result.Account.CurrentBalance };
+            var account = await RetrieveAccount(parameters.AccountId, null);
+            if (account.Success)
+                return new QueryBalanceResult() { Success = true, Balance = account.Account.CurrentBalance };
             else
                 return new QueryBalanceResult() { Success = false, ErrorMessage = "Falha ao buscar saldo do usuário." };
         }
@@ -317,7 +311,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
                 receiverAccount.Result.Account.CurrentBalance = receiverNewBalance;
                 senderAccount.Result.Account.CurrentBalance -= parameters.Amount;
                 await DbContext.SaveChangesAsync();
-                return new TransferBalanceResult() { Success = true, receiverAccount = receiverAccount.Result.Account, senderAccount = senderAccount.Result.Account };
+                return new TransferBalanceResult() { Success = true, ReceiverAccount = receiverAccount.Result.Account, SenderAccount = senderAccount.Result.Account };
             }
             else
                 return new TransferBalanceResult() { Success = false, ErrorMessage = "Erro ao transferir saldo" };
@@ -340,7 +334,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
         private async void CreateTransaction(int accountId, Guid sourceAccountUid, Guid receiverAccountUid,
             decimal amount, TransactionType transactionType, decimal receiverOldBalance, decimal receiverNewBalance, string? internalName, string? longDisplayName, string? shortDisplayName, string? description)
         {
-            var transaction = new Transaction()
+            Transaction transaction = new Transaction()
             {
                 AccountId = accountId,
                 InternalName = internalName,

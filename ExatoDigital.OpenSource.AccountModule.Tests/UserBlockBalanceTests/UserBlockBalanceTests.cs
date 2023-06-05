@@ -1,15 +1,8 @@
 ﻿using ExatoDigital.OpenSource.AccountModule.Core;
-using ExatoDigital.OpenSource.AccountModule.Domain;
-using ExatoDigital.OpenSource.AccountModule.Domain.Parameters;
 using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.UserBalanceParameters;
 using ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql;
 using ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositories;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExatoDigital.OpenSource.AccountModule.Tests.UserBlockBalanceTests
 {

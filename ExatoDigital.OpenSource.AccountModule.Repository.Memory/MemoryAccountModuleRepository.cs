@@ -1,13 +1,7 @@
 ﻿using ExatoDigital.OpenSource.AccountModule.Repository.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ExatoDigital.OpenSource.AccountModule.Domain.Models;
 using ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.CurrencyParameters;
 using ExatoDigital.OpenSource.AccountModule.Domain.Response.CurrencyResult;
 using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.AccountParameters;
@@ -22,10 +16,10 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
 {
     public sealed class MemoryAccountModuleRepository : IAccountModuleRepository
     {
-        static DbContextOptions options = new DbContextOptionsBuilder<AccountModuleDbContext>()
+        static readonly DbContextOptions Options = new DbContextOptionsBuilder<AccountModuleDbContext>()
             .UseInMemoryDatabase(databaseName: "AccountModuleDb").Options;
-        private AccountModuleDbContext _accountModuleDbContext { get; set; } = new AccountModuleDbContext(options);
-        
+        private AccountModuleDbContext AccountModuleDbContext { get; set; } = new AccountModuleDbContext(Options);
+
         public async Task<CreateAccountResult> CreateAccount(CreateAccountParameters parameters)
         {
             var retrieveAccountTypeParameters = new RetrieveAccountTypeParameters(parameters.AccountTypeId);
@@ -57,15 +51,14 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
                 AccountType = retrieveAccountType.AccountType,
                 Currency = retrieveCurrency.Currency
             };
-            _accountModuleDbContext.Account.Add(account);
-            var teste = _accountModuleDbContext.Account.Select(row => row);
-            await _accountModuleDbContext.SaveChangesAsync();
+            AccountModuleDbContext.Account.Add(account);
+            await AccountModuleDbContext.SaveChangesAsync();
             return new CreateAccountResult() { Success = true, Account = account };
         }
 
         public async Task<RetrieveAccountResult> RetrieveAccount(int? accountId, Guid? accountExternalUid)
         {
-            IQueryable<Account> query = _accountModuleDbContext.Account;
+            IQueryable<Account> query = AccountModuleDbContext.Account;
             if (accountId != null)
                 query = query.AsQueryable().Where(c => c.AccountId == accountId).Include(at => at.AccountType).Include(c => c.Currency);
             if (accountExternalUid != null)
@@ -79,7 +72,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
         }
         public async Task<UpdateAccountResult> UpdateAccount(UpdateAccountParameters parameters)
         {
-            var account = _accountModuleDbContext.Account.FirstOrDefault(x => x.AccountId == parameters.AccountId);
+            var account = AccountModuleDbContext.Account.FirstOrDefault(x => x.AccountId == parameters.AccountId);
             if (account != null)
             {
                 account.AccountExternalUid = parameters.AccountExternalUid ?? account.AccountExternalUid;
@@ -89,18 +82,22 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
                 account.Description = parameters.Description ?? account.Description;
                 account.Metadata = parameters.Metadata ?? account.Metadata;
             }
-            await _accountModuleDbContext.SaveChangesAsync();
+            await AccountModuleDbContext.SaveChangesAsync();
             return new UpdateAccountResult() { Success = true };
         }
         public async Task<DeleteAccountResult> DeleteAccount(DeleteAccountParameters parameters)
         {
             var account = RetrieveAccount(parameters.AccountId, parameters.AccountExternalUid);
-            if (account.Result.Success == true)
+            if (account.Result.Success)
             {
-                var accountDeleted = _accountModuleDbContext.Account.Where(x => x.AccountId == account.Result.Account.AccountId).FirstOrDefault();
-                accountDeleted.DeletedAt = DateTime.UtcNow;
-                accountDeleted.DeletedBy = parameters.DeletedBy;
-                await _accountModuleDbContext.SaveChangesAsync();
+                var accountDeleted = AccountModuleDbContext.Account.FirstOrDefault(x => x.AccountId == account.Result.Account.AccountId);
+                if (accountDeleted != null)
+                {
+                    accountDeleted.DeletedAt = DateTime.UtcNow;
+                    accountDeleted.DeletedBy = parameters.DeletedBy;
+                }
+
+                await AccountModuleDbContext.SaveChangesAsync();
                 return new DeleteAccountResult() { Success = true };
             }
             else
@@ -126,14 +123,14 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
                 DeletedBy = default
             };
 
-            _accountModuleDbContext.AccountType.Add(accountType);
-            await _accountModuleDbContext.SaveChangesAsync();
+            AccountModuleDbContext.AccountType.Add(accountType);
+            await AccountModuleDbContext.SaveChangesAsync();
 
             return new CreateAccountTypeResult() { Success = true, accountType = accountType };
         }
         public async Task<RetrieveAccountTypeResult> RetrieveAccountType(RetrieveAccountTypeParameters parameters)
         {
-            IQueryable<AccountType> query = _accountModuleDbContext.AccountType;
+            IQueryable<AccountType> query = AccountModuleDbContext.AccountType;
             if (parameters.AccountTypeId != null)
                 query = query.AsQueryable().Where(c => c.AccountTypeId == parameters.AccountTypeId);
             if (parameters.AccountTypeExternalUid != null)
@@ -142,15 +139,15 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
                 query = query.AsQueryable().Where(c => c.Name == parameters.Name);
 
             var result = await query.FirstOrDefaultAsync();
-            if (result != null) 
+            if (result != null)
                 return new RetrieveAccountTypeResult() { AccountType = result, Success = true };
             else
                 return new RetrieveAccountTypeResult() { AccountType = null, Success = false };
         }
         public async Task<UpdateAccountTypeResult> UpdateAccountType(UpdateAccountTypeParameters parameters)
         {
-            _accountModuleDbContext.Update(parameters.AccountType);
-            await _accountModuleDbContext.SaveChangesAsync();
+            AccountModuleDbContext.Update(parameters.AccountType);
+            await AccountModuleDbContext.SaveChangesAsync();
             return new UpdateAccountTypeResult() { Success = true };
         }
 
@@ -158,12 +155,15 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
         {
             var accountTypeParameters = new RetrieveAccountTypeParameters(accountTypeId: parameters.AccountTypeId);
             var accountType = RetrieveAccountType(accountTypeParameters);
-            if (accountType.Result.Success == true)
+            if (accountType.Result.Success)
             {
-                var accountTypeDeleted = _accountModuleDbContext.AccountType.Where(x => x.AccountTypeId == accountType.Result.AccountType.AccountTypeId).FirstOrDefault();
-                accountTypeDeleted.DeletedAt = DateTime.UtcNow;
-                accountTypeDeleted.DeletedBy = parameters.DeletedBy;
-                await _accountModuleDbContext.SaveChangesAsync();
+                var accountTypeDeleted = AccountModuleDbContext.AccountType.FirstOrDefault(x => accountType.Result.AccountType != null && x.AccountTypeId == accountType.Result.AccountType.AccountTypeId);
+                if (accountTypeDeleted != null)
+                {
+                    accountTypeDeleted.DeletedAt = DateTime.UtcNow;
+                    accountTypeDeleted.DeletedBy = parameters.DeletedBy;
+                }
+                await AccountModuleDbContext.SaveChangesAsync();
                 return new DeleteAccountTypeResult() { Success = true };
             }
             else
@@ -172,36 +172,22 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
 
         public async Task<CreateCurrencyResult> CreateCurrency(CreateCurrencyParameters parameters)
         {
-            var currency = new Currency
-            {
-                CurrencyUid = default,
-                CurrencyExternalUid = default,
-                CurrencyClientId = default,
-                InternalName = parameters.InternalName,
-                LongDisplayName = parameters.LongDisplayName,
-                ShortDisplayName = parameters.ShortDisplayName,
-                Description = parameters.Description,
-                AdditionalMetadata = default,
-                DecimalPrecision = parameters.DecimalPrecision,
-                MinValue= parameters.MinValue,
-                MaxValue = parameters.MaxValue,
-                Symbol = parameters.Symbol,
-                CreatedAt = default,
-                CreatedBy = default,
-                UpdatedAt = default,
-                UpdatedBy = default,
-                DeletedAt = default,
-                DeletedBy = default
-            };
+            var currency = new Currency(currencyUid: default, currencyExternalUid: default, currencyClientId: default,
+                internalName: parameters.InternalName, longDisplayName: parameters.LongDisplayName,
+                shortDisplayName: parameters.ShortDisplayName, description: parameters.Description,
+                additionalMetadata: default, decimalPrecision: parameters.DecimalPrecision,
+                minValue: parameters.MinValue, maxValue: parameters.MaxValue, symbol: parameters.Symbol,
+                createdAt: default, createdBy: default, updatedAt: default, updatedBy: default, deletedAt: default,
+                deletedBy: default);
 
-            _accountModuleDbContext.Currency.Add(currency);
-            await _accountModuleDbContext.SaveChangesAsync();
+            AccountModuleDbContext.Currency.Add(currency);
+            await AccountModuleDbContext.SaveChangesAsync();
 
-            return new CreateCurrencyResult() { Success = true, currency = currency};
+            return new CreateCurrencyResult() { Success = true, currency = currency };
         }
         public async Task<RetrieveCurrencyResult> RetrieveCurrency(RetrieveCurrencyParameters parameters)
         {
-            IQueryable<Currency> query = _accountModuleDbContext.Currency;
+            IQueryable<Currency> query = AccountModuleDbContext.Currency;
             if (parameters.CurrencyId != null)
                 query = query.AsQueryable().Where(c => c.CurrencyId == parameters.CurrencyId);
             if (parameters.CurrencyExternalUid != null)
@@ -217,8 +203,8 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
         }
         public async Task<UpdateCurrencyResult> UpdateCurrency(UpdateCurrencyParameters parameters)
         {
-            _accountModuleDbContext.Update(parameters.Currency);
-            await _accountModuleDbContext.SaveChangesAsync();
+            AccountModuleDbContext.Update(parameters.Currency);
+            await AccountModuleDbContext.SaveChangesAsync();
 
             return new UpdateCurrencyResult() { Success = true };
         }
@@ -227,16 +213,14 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
         {
             var retrieveCurrencyParameters = new RetrieveCurrencyParameters(currencyId: parameters.CurrencyId);
             var currency = RetrieveCurrency(retrieveCurrencyParameters);
-            if (currency.Result.Success == true)
-            {
-                currency.Result.Currency.DeletedAt = DateTime.UtcNow;
-                currency.Result.Currency.DeletedBy = parameters.DeletedBy;
-                var updateCurrencyParameters = new UpdateCurrencyParameters(currency.Result.Currency);
-                await UpdateCurrency(updateCurrencyParameters);
-                return new DeleteCurrencyResult() { Success = true };
-            }
-            else
-                return new DeleteCurrencyResult() { Success = false };
+            if (!currency.Result.Success) return new DeleteCurrencyResult() { Success = false };
+            if (currency.Result.Currency == null) return new DeleteCurrencyResult() { Success = false };
+            currency.Result.Currency.DeletedAt = DateTime.UtcNow;
+            currency.Result.Currency.DeletedBy = parameters.DeletedBy;
+            var updateCurrencyParameters = new UpdateCurrencyParameters(currency.Result.Currency);
+            await UpdateCurrency(updateCurrencyParameters);
+
+            return new DeleteCurrencyResult() { Success = true };
         }
 
         public async Task<QueryCurrencyResult> QueryCurrency(QueryCurrencyParameters parameters)
@@ -247,17 +231,17 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
         public async Task<BlockUserBalanceResult> BlockUserBalance(BlockUserBalanceParameters parameters)
         {
             var account = RetrieveAccount(parameters.AccountId, null);
-            if (account.Result.Success == true)
+            if (account.Result.Success)
             {
                 var newBalance = account.Result.Account.CurrentBalance - parameters.Amount;
                 var retrieveAccountTypeParameters = new RetrieveAccountTypeParameters(accountTypeId: account.Result.Account.AccountTypeId);
-                var retrieveAccountTypeResult = RetrieveAccountType(retrieveAccountTypeParameters);
-                if (!retrieveAccountTypeResult.Result.AccountType.NegativeBalanceAllowed && newBalance < 0)
+                var retrieveAccountTypeResult = await RetrieveAccountType(retrieveAccountTypeParameters);
+                if (retrieveAccountTypeResult.AccountType is { NegativeBalanceAllowed: false } && newBalance < 0)
                     return new BlockUserBalanceResult() { Success = false, Error = true, ErrorMessage = "Saldo insuficiente" };
 
                 account.Result.Account.CurrentBalance = newBalance;
                 account.Result.Account.BalanceBlocked = parameters.Amount;
-                await _accountModuleDbContext.SaveChangesAsync();
+                await AccountModuleDbContext.SaveChangesAsync();
                 return new BlockUserBalanceResult() { Success = true };
             }
             else
@@ -288,7 +272,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
                     accountOne.Result.Account.UpdatedAt = DateTime.UtcNow;
                     accountTwo.Result.Account.CurrentBalance = 0;
                     accountTwo.Result.Account.DeletedAt = DateTime.UtcNow;
-                    await _accountModuleDbContext.SaveChangesAsync();
+                    await AccountModuleDbContext.SaveChangesAsync();
                     return new JoinChildrenAccountsResult() { Success = true };
                 }
                 else
@@ -311,8 +295,8 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
                 CreateTransaction(receiverAccount.Result.Account.AccountId, senderAccount.Result.Account.AccountExternalUid, receiverAccount.Result.Account.AccountExternalUid, parameters.Amount, TransactionType.Deposit, receiverOldBalance, receiverNewBalance, null, null, null, null);
                 receiverAccount.Result.Account.CurrentBalance = receiverNewBalance;
                 senderAccount.Result.Account.CurrentBalance -= parameters.Amount;
-                await _accountModuleDbContext.SaveChangesAsync();
-                return new TransferBalanceResult() { Success = true, receiverAccount = receiverAccount.Result.Account, senderAccount = senderAccount.Result.Account };
+                await AccountModuleDbContext.SaveChangesAsync();
+                return new TransferBalanceResult() { Success = true, ReceiverAccount = receiverAccount.Result.Account, SenderAccount = senderAccount.Result.Account };
             }
             else
                 return new TransferBalanceResult() { Success = false, ErrorMessage = "Erro ao transferir saldo" };
@@ -337,7 +321,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
                 CreatedAt = DateTime.UtcNow,
                 CreatedBy = 1,
             };
-            await _accountModuleDbContext.SaveChangesAsync();
+            await AccountModuleDbContext.SaveChangesAsync();
         }
 
         private static bool ValidateIfTransactionIsPossible(Account sourceAccount, Account receiverAccount, decimal amount)
@@ -346,7 +330,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
                 return false;
             if (sourceAccount.CurrencyId != receiverAccount.CurrencyId)
                 return false;
-            if (sourceAccount.CurrentBalance < amount && !sourceAccount.AccountType.NegativeBalanceAllowed)
+            if (sourceAccount.AccountType != null && sourceAccount.CurrentBalance < amount && !sourceAccount.AccountType.NegativeBalanceAllowed)
                 return false;
             return true;
         }
@@ -364,6 +348,6 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.Memory
             return true;
         }
 
-        public static void Clear() {}
+        public static void Clear() { }
     }
 }

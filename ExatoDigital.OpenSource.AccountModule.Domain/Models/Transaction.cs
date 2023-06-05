@@ -1,10 +1,5 @@
 ﻿using ExatoDigital.OpenSource.AccountModule.Domain.Enums;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExatoDigital.OpenSource.AccountModule.Domain.Models
 {
@@ -15,10 +10,10 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Models
         public Guid TransactionUid { get; set; }
         public Guid TransactionExternalUid { get; set; }
         public int TransactionClientId { get; set; }
-        public string InternalName { get; set; }
-        public string LongDisplayName { get; set; }
-        public string ShortDisplayName { get; set; }
-        public string Description { get; set; }
+        public string? InternalName { get; set; }
+        public string? LongDisplayName { get; set; }
+        public string? ShortDisplayName { get; set; }
+        public string? Description { get; set; }
         [Column(TypeName = "jsonb")]
         public string Metadata { get; set; }
         public TransactionType TransactionType { get; set; }

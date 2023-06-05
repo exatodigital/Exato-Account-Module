@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ExatoDigital.OpenSource.AccountModule.Domain.Parameters.UserBalanceParameters
+﻿namespace ExatoDigital.OpenSource.AccountModule.Domain.Parameters.UserBalanceParameters
 {
     public class UnblockUserBalanceParameters : AccountModuleParameters
     {

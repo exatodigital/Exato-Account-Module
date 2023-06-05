@@ -1,5 +1,4 @@
 ﻿using ExatoDigital.OpenSource.AccountModule.Repository.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 
 namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositories

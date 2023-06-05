@@ -1,14 +1,7 @@
 ﻿using ExatoDigital.OpenSource.AccountModule.Core;
-using ExatoDigital.OpenSource.AccountModule.Domain.Parameters;
 using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.AccountTypeParameters;
-using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.CurrencyParameters;
 using ExatoDigital.OpenSource.AccountModule.Repository.Memory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExatoDigital.OpenSource.AccountModule.Tests.AccountTypeTests
 {
@@ -43,7 +36,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Tests.AccountTypeTests
                 Assert.IsTrue(retrieveAccountType.Success);
             }
             else
-                return;
+                Assert.IsFalse(true);
         }
         [TestMethod]
         public async Task UpdatAccountTypeSuccess()

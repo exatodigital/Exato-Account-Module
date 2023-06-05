@@ -1,16 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ExatoDigital.OpenSource.AccountModule.Domain.Models;
+﻿using ExatoDigital.OpenSource.AccountModule.Domain.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql
 {
     public sealed class AccountModuleDbContext : DbContext
     {
-        private readonly String? _connectionString;
+        private readonly string? _connectionString;
 
         public AccountModuleDbContext(DbContextOptions options) : base (options){}
         public AccountModuleDbContext(string connectionString) : base() { _connectionString = connectionString; }
@@ -26,13 +21,9 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql
         public DbSet<RealCurrency> RealCurrency { get; set; }
         public DbSet<Transaction> Transaction { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            base.OnConfiguring(optionsBuilder);
-        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            NpgsqlModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            modelBuilder.UseIdentityColumns();
 
             modelBuilder.Entity<Account>()
                 .HasOne(a => a.AccountType)

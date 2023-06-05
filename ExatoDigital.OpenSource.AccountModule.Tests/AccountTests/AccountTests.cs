@@ -1,21 +1,9 @@
 ﻿using ExatoDigital.OpenSource.AccountModule.Core;
-using ExatoDigital.OpenSource.AccountModule.Domain;
-using ExatoDigital.OpenSource.AccountModule.Domain.Parameters;
-using ExatoDigital.OpenSource.AccountModule.Domain.Models;
-using ExatoDigital.OpenSource.AccountModule.Domain.Response;
-using ExatoDigital.OpenSource.AccountModule.Repository.Memory;
-using ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql;
-using ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositories;
-using ExatoDigital.OpenSource.AccountModule.Repository.Repositories;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.CurrencyParameters;
-using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.AccountTypeParameters;
 using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.AccountParameters;
+using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.AccountTypeParameters;
+using ExatoDigital.OpenSource.AccountModule.Domain.Parameters.CurrencyParameters;
+using ExatoDigital.OpenSource.AccountModule.Repository.Memory;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ExatoDigital.OpenSource.AccountModule.Tests.AccountTests
 {

@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Nodes;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExatoDigital.OpenSource.AccountModule.Domain.Models
 {
@@ -13,9 +6,9 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Models
     {
         public int AccountId { get; set; }
         public int AccountTypeId { get; set; }
-        public AccountType AccountType { get; set; }
+        public AccountType? AccountType { get; set; }
         public int CurrencyId { get; set; }
-        public Currency Currency { get; set; }
+        public Currency? Currency { get; set; }
         public Guid AccountUid { get; set; }
         public Guid AccountExternalUid { get; set; }
         public int? AccountClientId { get; set; }

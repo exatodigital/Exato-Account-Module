@@ -1,15 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExatoDigital.OpenSource.AccountModule.Domain.Models
 {
     public class Currency
     {
+        public Currency(Guid currencyUid, Guid currencyExternalUid, int currencyClientId, string internalName, string longDisplayName, string shortDisplayName, string? description, string? additionalMetadata, int decimalPrecision, int minValue, int maxValue, string symbol, DateTime createdAt, int createdBy, DateTime updatedAt, int updatedBy, DateTime deletedAt, int? deletedBy)
+        {
+            CurrencyUid = currencyUid;
+            CurrencyExternalUid = currencyExternalUid;
+            CurrencyClientId = currencyClientId;
+            InternalName = internalName;
+            LongDisplayName = longDisplayName;
+            ShortDisplayName = shortDisplayName;
+            Description = description;
+            AdditionalMetadata = additionalMetadata;
+            DecimalPrecision = decimalPrecision;
+            MinValue = minValue;
+            MaxValue = maxValue;
+            Symbol = symbol;
+            CreatedAt = createdAt;
+            CreatedBy = createdBy;
+            UpdatedAt = updatedAt;
+            UpdatedBy = updatedBy;
+            DeletedAt = deletedAt;
+            DeletedBy = deletedBy;
+        }
+
         public int CurrencyId { get; set; }
         public Guid CurrencyUid { get; set; }
         public Guid CurrencyExternalUid { get; set; }
@@ -31,6 +47,6 @@ namespace ExatoDigital.OpenSource.AccountModule.Domain.Models
         public DateTime DeletedAt { get; set; }
         public int? DeletedBy { get; set; }
         public virtual RealCurrency? RealCurrency { get; set; }
-        public ICollection<Account> Accounts{ get; set; }
+        public ICollection<Account>? Accounts{ get; set; }
     }
 }

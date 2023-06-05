@@ -10,8 +10,6 @@ using ExatoDigital.OpenSource.AccountModule.Domain.Response.AccountResult;
 using ExatoDigital.OpenSource.AccountModule.Domain.Response.UserBalanceResult;
 using FluentValidation;
 using ExatoDigital.OpenSource.AccountModule.Domain.Validations.AccountParametersValidation;
-using ExatoDigital.OpenSource.AccountModule.Domain.Models;
-
 
 // Para logs: https://net-commons.github.io/common-logging/, https://www.nuget.org/packages/Common.Logging
 // Para injeção de dependências: Autofac / Ninject
@@ -35,7 +33,7 @@ namespace ExatoDigital.OpenSource.AccountModule.Core
         public async Task<CreateAccountResult> CreateAccount(CreateAccountParameters parameters)
         {
             var validation = new CreateAccountParametersValidator();
-            validation.ValidateAndThrow(parameters);
+            await validation.ValidateAndThrowAsync(parameters);
 
             try
             {
