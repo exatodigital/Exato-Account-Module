@@ -44,25 +44,25 @@
             DeletedBy = deletedBy;
         }
 
-        int? CurrencyId { get; set; }
-        Guid? CurrencyUid { get; set; }
-        Guid? CurrencyExternalUid { get; set; }
-        int? CurrencyClientId { get; set; }
-        string? InternalName { get; set; }
-        string? LongDisplayName { get; set; }
-        string? ShortDisplayName { get; set; }
-        string? Description { get; set; }
-        string? AdditionalMetadata { get; set; }
-        int? DecimalPrecision { get; set; }
-        int? MinValue { get; set; }
-        int? MaxValue { get; set; }
-        string? Symbol { get; set; }
-        DateTime? CreatedAt { get; set; }
-        int? CreatedBy { get; set; }
-        DateTime? UpdatedAt { get; set; }
-        int? UpdatedBy { get; set; }
-        DateTime? DeletedAt { get; set; }
-        int? DeletedBy { get; set; }
+        public int? CurrencyId { get; set; }
+        public Guid? CurrencyUid { get; set; }
+        public Guid? CurrencyExternalUid { get; set; }
+        public int? CurrencyClientId { get; set; }
+        public string? InternalName { get; set; }
+        public string? LongDisplayName { get; set; }
+        public string? ShortDisplayName { get; set; }
+        public string? Description { get; set; }
+        public string? AdditionalMetadata { get; set; }
+        public int? DecimalPrecision { get; set; }
+        public int? MinValue { get; set; }
+        public int? MaxValue { get; set; }
+        public string? Symbol { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public int? CreatedBy { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public int? UpdatedBy { get; set; }
+        public DateTime? DeletedAt { get; set; }
+        public int? DeletedBy { get; set; }
 
     }
 }

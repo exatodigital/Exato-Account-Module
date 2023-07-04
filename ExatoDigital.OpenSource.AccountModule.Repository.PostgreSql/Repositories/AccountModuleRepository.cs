@@ -166,9 +166,47 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
             else
                 return new DeleteAccountTypeResult() { Success = false, ErrorMessage = "Falha ao deletar AccountType." };
         }
-        public async Task<CreateAccountTypeResult> QueryAccountType(CreateAccountTypeParameters parameters)
+        public async Task<QueryAccountTypeResult> QueryAccountType(QueryAccountTypeParameters parameters)
         {
-            return new CreateAccountTypeResult();
+            var filteredAccountTypes = DbContext.AccountType.AsNoTracking().Where(currency =>
+                    (parameters.AccountTypeId == null || currency.AccountTypeId == parameters.AccountTypeId) &&
+                    (parameters.AccountTypeUid == null || currency.AccountTypeUid == parameters.AccountTypeUid) &&
+                    (parameters.AccountTypeExternalUid == null ||
+                     currency.AccountTypeExternalUid == parameters.AccountTypeExternalUid) &&
+                    (parameters.AccountTypeClientId == null ||
+                     currency.AccountTypeClientId == parameters.AccountTypeClientId) &&
+                    (parameters.Name == null || currency.Name == parameters.Name) &&
+                    (parameters.NegativeBalanceAllowed == null ||
+                     currency.NegativeBalanceAllowed == parameters.NegativeBalanceAllowed) &&
+                    (parameters.AllowedToExpire == null || currency.AllowedToExpire == parameters.AllowedToExpire) &&
+                    (parameters.ExpireAt == null || currency.ExpireAt == parameters.ExpireAt) &&
+                    (parameters.CreatedAt == null || currency.CreatedAt == parameters.CreatedAt) &&
+                    (parameters.CreatedBy == null || currency.CreatedBy == parameters.CreatedBy) &&
+                    (parameters.UpdatedAt == null || currency.UpdatedAt == parameters.UpdatedAt) &&
+                    (parameters.UpdatedBy == null || currency.UpdatedBy == parameters.UpdatedBy) &&
+                    (parameters.DeletedAt == null || currency.DeletedAt == parameters.DeletedAt) &&
+                    (parameters.DeletedBy == null || currency.DeletedBy == parameters.DeletedBy)
+                )
+                .Select(accountType => new AccountType(
+                    accountType.AccountTypeId,
+                    accountType.AccountTypeUid,
+                    accountType.AccountTypeExternalUid,
+                    accountType.AccountTypeClientId,
+                    accountType.Name,
+                    accountType.NegativeBalanceAllowed,
+                    accountType.AllowedToExpire,
+                    accountType.ExpireAt,
+                    accountType.CreatedAt,
+                    accountType.CreatedBy,
+                    accountType.UpdatedAt,
+                    accountType.UpdatedBy,
+                    accountType.DeletedAt,
+                    accountType.DeletedBy
+                )).ToList();
+
+            if (filteredAccountTypes.Any() && filteredAccountTypes.Count > 0)
+                return new QueryAccountTypeResult() {Success = true, AccountTypes = filteredAccountTypes };
+            return new QueryAccountTypeResult() {Success = false, ErrorMessage = "Não foi encontrado nenhuma Currency com os paramêtros passados."};
         }
         public async Task<CreateCurrencyResult> CreateCurrency(CreateCurrencyParameters parameters)
         {
@@ -224,7 +262,52 @@ namespace ExatoDigital.OpenSource.AccountModule.Repository.PostgreSql.Repositori
         }
         public async Task<QueryCurrencyResult> QueryCurrency(QueryCurrencyParameters parameters)
         {
-            return new QueryCurrencyResult();
+            var filteredCurrencies = DbContext.Currency.AsNoTracking().Where(currency =>
+                    (parameters.CurrencyId == null || currency.CurrencyId == parameters.CurrencyId) &&
+                    (parameters.CurrencyUid == null || currency.CurrencyUid == parameters.CurrencyUid) &&
+                    (parameters.CurrencyExternalUid == null ||
+                     currency.CurrencyExternalUid == parameters.CurrencyExternalUid) &&
+                    (parameters.CurrencyClientId == null || currency.CurrencyClientId == parameters.CurrencyClientId) &&
+                    (parameters.InternalName == null || currency.InternalName == parameters.InternalName) &&
+                    (parameters.LongDisplayName == null || currency.LongDisplayName == parameters.LongDisplayName) &&
+                    (parameters.ShortDisplayName == null || currency.ShortDisplayName == parameters.ShortDisplayName) &&
+                    (parameters.Description == null || currency.Description == parameters.Description) &&
+                    (parameters.AdditionalMetadata == null ||
+                     currency.AdditionalMetadata == parameters.AdditionalMetadata) &&
+                    (parameters.DecimalPrecision == null || currency.DecimalPrecision == parameters.DecimalPrecision) &&
+                    (parameters.MinValue == null || currency.MinValue == parameters.MinValue) &&
+                    (parameters.MaxValue == null || currency.MaxValue == parameters.MaxValue) &&
+                    (parameters.Symbol == null || currency.Symbol == parameters.Symbol) &&
+                    (parameters.CreatedAt == null || currency.CreatedAt == parameters.CreatedAt) &&
+                    (parameters.CreatedBy == null || currency.CreatedBy == parameters.CreatedBy) &&
+                    (parameters.UpdatedAt == null || currency.UpdatedAt == parameters.UpdatedAt) &&
+                    (parameters.UpdatedBy == null || currency.UpdatedBy == parameters.UpdatedBy) &&
+                    (parameters.DeletedBy == null || currency.DeletedBy == parameters.DeletedBy)
+                )
+                .Select(currency => new Currency(
+                    currency.CurrencyUid,
+                    currency.CurrencyExternalUid,
+                    currency.CurrencyClientId,
+                    currency.InternalName,
+                    currency.LongDisplayName,
+                    currency.ShortDisplayName,
+                    currency.Description,
+                    currency.AdditionalMetadata,
+                    currency.DecimalPrecision,
+                    currency.MinValue,
+                    currency.MaxValue,
+                    currency.Symbol,
+                    currency.CreatedAt,
+                    currency.CreatedBy,
+                    currency.UpdatedAt,
+                    currency.UpdatedBy,
+                    currency.DeletedAt,
+                    currency.DeletedBy
+                )).ToList();
+
+            if (filteredCurrencies.Any() && filteredCurrencies.Count > 0)
+                return new QueryCurrencyResult() {Success = true, Currencies = filteredCurrencies };
+            return new QueryCurrencyResult() {Success = false, ErrorMessage = "Não foi encontrado nenhuma Currency com os paramêtros passados."};
         }
 
         public async Task<BlockUserBalanceResult> BlockUserBalance(BlockUserBalanceParameters parameters)
